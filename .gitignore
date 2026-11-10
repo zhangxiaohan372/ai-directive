@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.aistudio/
+.playwright-cli/
+*.zip
+public/*.zip
+*.png
+!public/assets/**
+!src/assets/**
+.env
+do_push.sh
