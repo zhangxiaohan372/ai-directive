@@ -1,0 +1,8 @@
+{
+  "name": "迷雾剧场：午夜画廊",
+  "description": "由 AI 主持的多人互动剧本杀推理游戏《午夜画廊》，3D微缩画廊沉浸探索、AI嫌疑人审问、证据链图谱与防剧透裁判。",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

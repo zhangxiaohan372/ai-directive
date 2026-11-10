@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mystery_stage_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - DATABASE_URL=postgres://postgres:mystery_pass_2026@postgres:5432/mysterystage
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mystery_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mystery_stage_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mystery_pass_2026
+      POSTGRES_DB: mysterystage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mysterystage"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mystery_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: mystery_stage_redis
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mystery_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  mystery_network:
+    driver: bridge

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-coral-50: #fff1f2;
+  --color-coral-100: #ffe4e6;
+  --color-coral-200: #fecdd3;
+  --color-coral-300: #fda4af;
+  --color-coral-400: #fb7185;
+  --color-coral-500: #e11d48;
+  --color-coral-600: #be123c;
+  --color-coral-700: #9f1239;
+  --color-coral-800: #881337;
+  --color-coral-900: #4c0519;
+}
