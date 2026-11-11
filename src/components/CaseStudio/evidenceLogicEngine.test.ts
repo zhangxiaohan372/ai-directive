@@ -21,14 +21,14 @@ test('calculateSuspectEvidenceProfiles correctly attributes highest inculpation 
 
   const culpritProfile = profiles.find((p) => p.isTrueCulprit);
   assert.ok(culpritProfile, 'True culprit profile must exist');
-  assert.equal(culpritProfile.suspectId, 'xu_ning');
-  assert.ok(culpritProfile.totalInculpationScore >= 80, 'Culprit score should be >= 80');
-  assert.equal(culpritProfile.convictionStatus, 'IRREFUTABLE');
+  assert.equal(culpritProfile!.suspectId, 'xu_ning');
+  assert.ok(culpritProfile!.totalInculpationScore >= 80, 'Culprit score should be >= 80');
+  assert.equal(culpritProfile!.convictionStatus, 'IRREFUTABLE');
 
   // Verify non-culprits have lower scores
   const innocents = profiles.filter((p) => !p.isTrueCulprit);
   for (const innocent of innocents) {
-    assert.ok(innocent.totalInculpationScore < culpritProfile.totalInculpationScore);
+    assert.ok(innocent.totalInculpationScore < culpritProfile!.totalInculpationScore);
     assert.notEqual(innocent.convictionStatus, 'IRREFUTABLE');
   }
 });
@@ -45,7 +45,7 @@ test('buildClueCorrelationMatrix generates non-empty correlation cells for all c
     (m) => m.clueId === 'clue_keycard' && m.suspectId === 'xu_ning'
   );
   assert.ok(keycardCulprit);
-  assert.ok(keycardCulprit.strength >= 80);
+  assert.ok(keycardCulprit!.strength >= 80);
 });
 
 test('buildRadarInferenceData outputs 5 radar dimensions with valid values', () => {

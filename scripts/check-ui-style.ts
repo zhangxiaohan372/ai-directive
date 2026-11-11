@@ -18,7 +18,7 @@ function walkDir(dir: string, fileList: string[] = []): string[] {
       if (!fullPath.includes('node_modules') && !fullPath.includes('dist') && !fullPath.includes('.playwright-cli')) {
         walkDir(fullPath, fileList);
       }
-    } else if (file.endsWith('.tsx') || file.endsWith('.ts')) {
+    } else if (file.endsWith('.vue') || file.endsWith('.tsx') || file.endsWith('.ts')) {
       fileList.push(fullPath);
     }
   }
