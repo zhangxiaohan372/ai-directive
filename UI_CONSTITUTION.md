@@ -1,6 +1,7 @@
 # UI Style & Development Constitution (界面规范锚点)
 
-> **核心技能文件路径**：`/skills/custom_skills/mystery-platform-ui-style/SKILL.md`  
+> **Copilot 技能文件路径**：`.github/skills/mystery-platform-ui-style/SKILL.md`  
+> **Claude Code / Antigravity 镜像路径**：`.claude/skills/mystery-platform-ui-style/SKILL.md`、`.agent/skills/mystery-platform-ui-style/SKILL.md`  
 > **工程自动化校验脚本**：`scripts/check-ui-style.ts` (已挂载至 `npm run lint`)
 
 每次在进行任何前端界面修改、新增页面、调整主题或设计组件时，**必须严格遵守**该 Skill 中的规范与五大反例红线：

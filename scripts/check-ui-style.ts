@@ -6,7 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 
-// Anti-Pattern 1: Strict Zero-Emoji Rule (from /skills/custom_skills/mystery-platform-ui-style/SKILL.md)
+// Anti-Pattern 1: Strict Zero-Emoji Rule (from .github/skills/mystery-platform-ui-style/SKILL.md)
 const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
 
 function walkDir(dir: string, fileList: string[] = []): string[] {
@@ -37,7 +37,7 @@ for (const file of files) {
     if (emojiRegex.test(line)) {
       console.error(
         `[UI Style Guardrail Error] ${file}:${i + 1} 发现未合规 Emoji 字符！` +
-        `\n  -> 违反 /skills/custom_skills/mystery-platform-ui-style/SKILL.md 反例 1 (Strict Zero-Emoji Rule)` +
+        `\n  -> 违反 .github/skills/mystery-platform-ui-style/SKILL.md 反例 1 (Strict Zero-Emoji Rule)` +
         `\n  -> 涉及行代码: ${line.trim()}`
       );
       errors++;
@@ -49,5 +49,5 @@ if (errors > 0) {
   console.error(`\n❌ [Guardrail Check Failed] 共发现 ${errors} 处违反 UI Style Skill 规范的代码。请查阅 SKILL.md 进行修正。`);
   process.exit(1);
 } else {
-  console.log('✅ [UI Style Guardrail Pass] 100% 符合 /skills/custom_skills/mystery-platform-ui-style/SKILL.md 规范！');
+  console.log('✅ [UI Style Guardrail Pass] 100% 符合 .github/skills/mystery-platform-ui-style/SKILL.md 规范！');
 }
