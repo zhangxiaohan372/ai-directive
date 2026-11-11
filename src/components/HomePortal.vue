@@ -23,7 +23,6 @@ import {
   X,
   Sun,
   Moon,
-  Download,
 } from 'lucide-vue-next';
 
 export interface CaseCardItem {
@@ -290,22 +289,6 @@ const handleScrollToCases = () => {
           <VolumeX v-if="isMuted" class="w-4 h-4 opacity-50" />
           <Volume2 v-else class="w-4 h-4 animate-pulse" :class="isDark ? 'text-[#C9942D]' : 'text-[#8B3A2B]'" />
         </button>
-
-        <!-- Direct Download Project Source Code ZIP -->
-        <a
-          href="/ai_detective_project.zip"
-          download="ai_detective_project.zip"
-          class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-serif font-medium transition cursor-pointer shadow-sm"
-          :class="
-            isDark
-              ? 'bg-[#221810] hover:bg-[#322317] text-[#E8C88B] border-[#523A25] hover:border-[#8C683F]'
-              : 'bg-white hover:bg-[#F2ECE4] text-[#8B3A2B] border-[#E0D5C7]'
-          "
-          title="一键下载完整工程代码包 (ZIP 格式，包含全部前端代码、3D 模型与场景资源)"
-        >
-          <Download class="w-3.5 h-3.5" />
-          <span>下载源码</span>
-        </a>
 
         <!-- User Avatar -->
         <div
