@@ -23,7 +23,12 @@ import {
   X,
   Sun,
   Moon,
+  ShieldAlert,
+  BadgeCheck,
+  LogOut,
+  RotateCcw,
 } from 'lucide-vue-next';
+import { useAuth } from '../composables/useAuth';
 
 export interface CaseCardItem {
   id: string;
@@ -97,6 +102,9 @@ const emit = defineEmits<{
 const searchQuery = ref('');
 const isMuted = ref(sound.getIsMuted());
 const selectedCaseModal = ref<CaseCardItem | null>(null);
+
+const { currentUser, is401Expired, trigger401, openLogin, logout } = useAuth();
+const isUserMenuOpen = ref(false);
 
 const isDark = computed(() => props.themeMode === 'dark');
 
@@ -290,16 +298,48 @@ const handleScrollToCases = () => {
           <Volume2 v-else class="w-4 h-4 animate-pulse" :class="isDark ? 'text-[#C9942D]' : 'text-[#8B3A2B]'" />
         </button>
 
-        <!-- User Avatar -->
-        <div
-          class="w-8 h-8 rounded-full overflow-hidden border flex items-center justify-center text-xs shrink-0 shadow-md font-serif"
+        <!-- Simulated 401 Unauthorized Trigger Button -->
+        <button
+          @click="trigger401('用户在首页顶栏主动触发 401 模拟：会话凭证过期，请重新验证侦探档案。')"
+          class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-mono transition cursor-pointer active:scale-95 shadow-xs"
           :class="
             isDark
-              ? 'border-[#523A25] bg-[#221810] text-[#E8C88B]'
-              : 'border-[#E0D5C7] bg-[#FAF7F2] text-[#8B3A2B]'
+              ? 'bg-[#2A100C]/80 border-[#681E15] text-[#DF5343] hover:bg-[#3E1410] hover:border-[#DF5343]'
+              : 'bg-[#FCEDEB] border-[#F2C1BA] text-[#8B3A2B] hover:bg-[#F8DED9]'
           "
+          title="点击模拟触发 HTTP 401 登录失效，展示侦探档案核验界面"
         >
-          <span class="font-bold">侦</span>
+          <ShieldAlert class="w-3.5 h-3.5 shrink-0" />
+          <span class="hidden sm:inline font-serif font-bold text-[11px]">模拟401失效</span>
+        </button>
+
+        <!-- User Detective Profile Stamp / Login Trigger -->
+        <div class="relative">
+          <button
+            @click="openLogin"
+            class="flex items-center gap-2 px-2 py-1 rounded-full border transition cursor-pointer active:scale-95 shadow-xs"
+            :class="
+              isDark
+                ? 'border-[#523A25] bg-[#221810] text-[#E8C88B] hover:border-[#C9942D]'
+                : 'border-[#E0D5C7] bg-[#FAF7F2] text-[#8B3A2B] hover:border-[#8B3A2B]'
+            "
+            :title="`当前侦探：${currentUser?.name || '未登录'} [${currentUser?.badgeNo || '无警号'}] - 点击切换或验证`"
+          >
+            <div
+              class="w-6 h-6 rounded-full overflow-hidden border flex items-center justify-center text-xs shrink-0 font-serif font-bold"
+              :class="
+                isDark
+                  ? 'border-[#C9942D]/40 bg-[#2D2015] text-[#E5C384]'
+                  : 'border-[#8B3A2B]/30 bg-[#8B3A2B] text-white'
+              "
+            >
+              {{ currentUser?.initials || '侦' }}
+            </div>
+            <div class="hidden lg:flex flex-col text-left leading-none font-serif pr-1">
+              <span class="text-xs font-bold truncate max-w-[90px]">{{ currentUser?.name || '首席侦探' }}</span>
+              <span class="text-[9px] font-mono opacity-70">{{ currentUser?.badgeNo || 'CID-8492' }}</span>
+            </div>
+          </button>
         </div>
       </div>
     </header>

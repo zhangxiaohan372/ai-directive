@@ -62,6 +62,44 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+// Mock Auth: Test 401 Unauthorized route
+app.get('/api/auth/test-401', (_req, res) => {
+  res.status(401).json({
+    success: false,
+    code: 401,
+    error: '侦探身份凭证已失效或会话超时 (HTTP 401 Unauthorized)。请重新核验档案印信。',
+  });
+});
+
+// Mock Auth: Login / Token verification
+app.post('/api/auth/login', (req, res) => {
+  const { badgeNo, passcode } = req.body;
+  if (!badgeNo || !passcode) {
+    return res.status(400).json({ success: false, error: '缺少侦探警号或核验口令' });
+  }
+
+  if (passcode === 'invalid') {
+    return res.status(401).json({
+      success: false,
+      code: 401,
+      error: '核验证据链印信口令失败：401 未获授权。',
+    });
+  }
+
+  res.json({
+    success: true,
+    token: `jwt_${badgeNo}_${Date.now()}`,
+    user: {
+      badgeNo,
+      name: badgeNo === 'CID-8492' ? '陈默 (特聘顾问)' : `警员 ${badgeNo}`,
+      title: '首席刑侦推理顾问',
+      clearanceLevel: 'LEVEL-IV [全权调阅]',
+      station: '市刑侦重案特别调查组 · 督察处',
+      initials: badgeNo.slice(0, 1),
+    },
+  });
+});
+
 // Direct Project Source Code Zip Download Route
 app.get('/ai_detective_project.zip', (_req, res) => {
   const zipPath = path.resolve(__dirname, 'public', 'ai_detective_project.zip');
