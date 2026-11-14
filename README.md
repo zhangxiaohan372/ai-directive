@@ -19,11 +19,11 @@
 ## 系统架构设计
 
 ```
-[前端 SPA (React 19 + TypeScript + Tailwind 4 + Three.js)]
+[前端 SPA (Vue 3 + TypeScript + Vite + Tailwind 4 + Three.js)]
         │
-        ├── HTTP / WebSocket 消息交互
-        ▼
-[后端服务 (Express + Node.js/tsx)]
+        └── 当前游戏状态与逻辑在浏览器本地运行
+
+[可选后端服务 (Express + Node.js/tsx)]
         │
         ├── MCP 工具调度器 (Model Context Protocol 8大核心工具)
         │     ├── get_game_state / get_player_inventory
@@ -89,17 +89,21 @@
 
 ## 启动与运行指南
 
-### 本地快速运行 (推荐)
+### 纯前端本地运行 (推荐)
 ```bash
 # 1. 安装依赖
 npm install
 
-# 2. 启动全栈开发服务 (端口 3000)
+# 2. 启动 Vite 前端开发服务器
 npm run dev
 
-# 3. 运行纯逻辑单元测试 (内置 node:test)
+# 3. 在终端显示的 Local 地址打开应用（默认 http://localhost:5173）
+
+# 运行纯逻辑单元测试 (内置 node:test)
 npx --yes tsx --test src/game/engine.test.ts
 ```
+
+前端试玩不需要启动 Express。需要单独调试现有后端 API 时，在另一个终端运行 `npm run dev:server`（默认端口 3000）。当前前端未配置 API 代理，前后端分别运行。
 
 ### Docker Compose 容器化部署
 ```bash

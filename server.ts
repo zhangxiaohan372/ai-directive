@@ -385,19 +385,11 @@ ${scriptText}
   });
 });
 
-// ---------------- VITE & STATIC SERVING ----------------
+// ---------------- STATIC SERVING ----------------
 
 async function setupServer() {
   const isProd = process.env.NODE_ENV === 'production';
-  if (!isProd) {
-    // Development mode: attach Vite dev server middleware
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
+  if (isProd) {
     // Production mode: serve built assets from dist
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
