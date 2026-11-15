@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import Lobby from '../components/Lobby.vue';
+import Lobby from './Lobby/Lobby.vue';
 import { useGameState } from '../composables/useGameState';
 import { useTheme } from '../composables/useTheme';
 

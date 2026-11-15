@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import StorySubtitleBar from './components/StorySubtitleBar.vue';
-import DetectiveLoginModal from './components/DetectiveLoginModal.vue';
+import StorySubtitleBar from './components/panels/StorySubtitleBar.vue';
+import DetectiveLoginModal from './components/modals/DetectiveLoginModal.vue';
 import { useTheme } from './composables/useTheme';
 import { useGameState } from './composables/useGameState';
 import { createInitialRoom, advanceGamePhase } from './game/engine';

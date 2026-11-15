@@ -11,4 +11,86 @@
   --color-coral-700: #9f1239;
   --color-coral-800: #881337;
   --color-coral-900: #4c0519;
+
+  /* Detective Design System Semantic Tokens */
+  --color-theme-desk: var(--bg-desk);
+  --color-theme-card: var(--bg-card);
+  --color-theme-card-subtle: var(--bg-card-subtle);
+  --color-theme-surface: var(--bg-surface);
+  --color-theme-ink: var(--text-primary);
+  --color-theme-secondary: var(--text-secondary);
+  --color-theme-muted: var(--text-muted);
+  --color-theme-border: var(--border-subtle);
+  --color-theme-border-strong: var(--border-strong);
+  --color-theme-accent: var(--color-accent);
+  --color-theme-accent-hover: var(--color-accent-hover);
+}
+
+:root {
+  /* Light Manuscript (白昼手稿) */
+  --bg-desk: #F5EFE6;
+  --bg-card: #FAF7F2;
+  --bg-card-subtle: #F0EAE1;
+  --bg-surface: #FFFFFF;
+  --bg-overlay: rgba(245, 239, 230, 0.88);
+  --text-primary: #2C241E;
+  --text-secondary: #6E5F52;
+  --text-muted: #8C7E72;
+  --border-subtle: #E8DFD5;
+  --border-strong: #D5C7B8;
+  --color-accent: #8B3A2B;
+  --color-accent-hover: #783023;
+  --color-accent-bg: rgba(139, 58, 43, 0.1);
+  --ring-accent: rgba(139, 58, 43, 0.35);
+  --shadow-dossier: 0 20px 50px -10px rgba(0, 0, 0, 0.08);
+}
+
+.dark,
+[data-theme="dark"] {
+  /* Dark Study (暗夜书房) */
+  --bg-desk: #0C0A09;
+  --bg-card: #130F0D;
+  --bg-card-subtle: #1C1714;
+  --bg-surface: #181411;
+  --bg-overlay: rgba(12, 10, 9, 0.88);
+  --text-primary: #F3EFEA;
+  --text-secondary: #C8BEB5;
+  --text-muted: #A89073;
+  --border-subtle: #3B3027;
+  --border-strong: #4F3E32;
+  --color-accent: #C9942D;
+  --color-accent-hover: #DFB36C;
+  --color-accent-bg: rgba(201, 148, 45, 0.12);
+  --ring-accent: rgba(201, 148, 45, 0.45);
+  --shadow-dossier: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 12px 28px -6px rgba(0, 0, 0, 0.8);
+}
+
+/* Common Semantic Utility Classes */
+.panel-dossier-card {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  box-shadow: var(--shadow-dossier);
+}
+
+.panel-dossier-header {
+  background-color: var(--bg-card-subtle);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.text-dossier-ink {
+  color: var(--text-primary);
+}
+
+.text-dossier-muted {
+  color: var(--text-muted);
+}
+
+.text-dossier-accent {
+  color: var(--color-accent);
+}
+
+.border-dossier-subtle {
+  border-color: var(--border-subtle);
 }

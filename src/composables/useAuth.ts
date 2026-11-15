@@ -146,6 +146,50 @@ export function useAuth() {
     return { success: true, message: '侦探身份全权认证通过，已重新激活现场调度授权。' };
   };
 
+  const registerUser = async (
+    badgeNo: string,
+    passcode: string,
+    nickname?: string
+  ): Promise<{ success: boolean; message: string }> => {
+    sound.playPaperRustle();
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    const cleanBadge = badgeNo.trim().toUpperCase();
+    if (!cleanBadge || passcode.trim().length < 4) {
+      return { success: false, message: '通行口令长度至少需为 4 位。' };
+    }
+
+    const matched = PRESET_ACCOUNTS.find(
+      (acc) => acc.badgeNo.toUpperCase() === cleanBadge
+    );
+    if (matched) {
+      return { success: false, message: '该警号/代号已存在，请直接登录或更换代号。' };
+    }
+
+    const nameStr = nickname?.trim() || `侦探 ${cleanBadge}`;
+    const newUser: DetectiveUser = {
+      id: `det_${Date.now().toString(36)}`,
+      badgeNo: cleanBadge,
+      name: nameStr,
+      title: '特邀探案创作家',
+      clearanceLevel: 'LEVEL-III [探案与工坊全权权限]',
+      station: '特别侦查创作联合体 · 总署',
+      initials: nameStr.slice(0, 1),
+    };
+
+    const mockToken = `jwt_${cleanBadge}_${Date.now()}`;
+    token.value = mockToken;
+    currentUser.value = newUser;
+    authStatus.value = 'authenticated';
+    expiredReason.value = '';
+    localStorage.setItem(STORAGE_KEY_AUTH, mockToken);
+    localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(newUser));
+    isLoginModalOpen.value = false;
+    sound.playClueFound();
+
+    return { success: true, message: '新侦探通行档案注册成功，已颁发探案与创作双重特许！' };
+  };
+
   const logout = () => {
     sound.playPaperRustle();
     token.value = null;
@@ -190,6 +234,7 @@ export function useAuth() {
     isLoginModalOpen,
     trigger401,
     loginWithCredentials,
+    registerUser,
     logout,
     openLogin,
     closeLogin,

@@ -11,15 +11,15 @@ import {
   VolumeX,
   LogOut,
 } from 'lucide-vue-next';
-import SceneInvestigationView from '../components/SceneInvestigationView.vue';
-import InvestigationDrawer from '../components/InvestigationDrawer.vue';
-import DetectiveBottomDock from '../components/DetectiveBottomDock.vue';
-import CaseBoardDrawer from '../components/CaseBoardDrawer.vue';
-import FloorPlanModal from '../components/FloorPlanModal.vue';
-import SuspectDossierModal from '../components/SuspectDossierModal.vue';
-import EvidenceModal3D from '../components/EvidenceModal3D.vue';
-import VoteModal from '../components/VoteModal.vue';
-import TruthReview from '../components/TruthReview.vue';
+import SceneInvestigationView from './Investigation/SceneInvestigationView.vue';
+import InvestigationDrawer from '../components/panels/InvestigationDrawer.vue';
+import DetectiveBottomDock from '../components/panels/DetectiveBottomDock.vue';
+import CaseBoardDrawer from '../components/panels/CaseBoardDrawer.vue';
+import FloorPlanModal from '../components/modals/FloorPlanModal.vue';
+import SuspectDossierModal from '../components/modals/SuspectDossierModal.vue';
+import EvidenceModal3D from '../components/modals/EvidenceModal3D.vue';
+import VoteModal from '../components/modals/VoteModal.vue';
+import TruthReview from '../components/panels/TruthReview.vue';
 import { addClueLink } from '../game/engine';
 import { useGameState } from '../composables/useGameState';
 import { useTheme } from '../composables/useTheme';

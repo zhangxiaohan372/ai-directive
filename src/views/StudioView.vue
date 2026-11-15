@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import CaseStudio from '../components/CaseStudio/CaseStudio.vue';
-import type { StudioCaseData } from '../components/CaseStudio/types';
+import CaseStudio from './CaseStudio/CaseStudio.vue';
+import type { StudioCaseData } from '../core/studio';
 import { useGameState } from '../composables/useGameState';
 import { useTheme } from '../composables/useTheme';
 

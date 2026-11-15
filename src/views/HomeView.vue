@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import HomePortal from '../components/HomePortal.vue';
+import HomePortal from './Home/HomePortal.vue';
 import { useTheme } from '../composables/useTheme';
 import { useGameState } from '../composables/useGameState';
 
