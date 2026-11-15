@@ -69,7 +69,7 @@ export function triggerUnauthorized(reason = '侦探身份认证签名已过期 
 
 // 获取默认 API BaseURL
 const defaultBaseUrl =
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) || '/api';
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || '/api';
 
 // 创建全局底层 Axios 实例
 const service: AxiosInstance = axios.create({
@@ -83,6 +83,12 @@ const service: AxiosInstance = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig & { skipAuth?: boolean }) => {
+    // 规范化 URL 路径，避免 BaseURL 已含 /api 时出现重复 /api/api
+    const currentBase = (config.baseURL || service.defaults.baseURL || '').toString().replace(/\/+$/, '');
+    if (currentBase.endsWith('/api') && config.url?.startsWith('/api/')) {
+      config.url = config.url.replace(/^\/api/, '');
+    }
+
     // 自动挂载侦探 Bearer Token
     if (!config.skipAuth) {
       const token =

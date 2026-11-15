@@ -39,21 +39,21 @@ export interface InterrogateParams {
  * 创建多人探案房间
  */
 export function createRoomApi(params?: CreateRoomParams): Promise<{ success: boolean; room: RoomState }> {
-  return request.post('/rooms/create', params || {});
+  return request.post('/api/rooms/create', params || {});
 }
 
 /**
  * 加入多人探案房间
  */
 export function joinRoomApi(params: JoinRoomParams): Promise<{ success: boolean; room: RoomState; playerId: string }> {
-  return request.post('/rooms/join', params);
+  return request.post('/api/rooms/join', params);
 }
 
 /**
  * 查询指定房间实时案情状态
  */
 export function getRoomStateApi(roomId: string): Promise<{ success: boolean; room: RoomState }> {
-  return request.get(`/rooms/${encodeURIComponent(roomId)}`);
+  return request.get(`/api/rooms/${encodeURIComponent(roomId)}`);
 }
 
 /**
@@ -63,7 +63,7 @@ export function dispatchRoomActionApi<T = any>(
   roomId: string,
   params: RoomActionParams
 ): Promise<{ success: boolean; room: RoomState; result: T }> {
-  return request.post(`/rooms/${encodeURIComponent(roomId)}/action`, params);
+  return request.post(`/api/rooms/${encodeURIComponent(roomId)}/action`, params);
 }
 
 /**
@@ -74,7 +74,7 @@ export function executeMcpToolApi<T = any>(
   toolName: string,
   args: any
 ): Promise<{ success: boolean; room: RoomState; result: T }> {
-  return request.post(`/rooms/${encodeURIComponent(roomId)}/mcp`, { toolName, args });
+  return request.post(`/api/rooms/${encodeURIComponent(roomId)}/mcp`, { toolName, args });
 }
 
 /**
@@ -84,5 +84,5 @@ export function interrogateNpcApi(
   roomId: string,
   params: InterrogateParams
 ): Promise<{ success: boolean; room: RoomState; aiOutput: any }> {
-  return request.post(`/rooms/${encodeURIComponent(roomId)}/interrogate`, params);
+  return request.post(`/api/rooms/${encodeURIComponent(roomId)}/interrogate`, params);
 }
