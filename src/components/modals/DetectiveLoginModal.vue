@@ -201,8 +201,8 @@ const handleSubmit = async () => {
       <div
         class="absolute inset-0"
         :class="isDark
-          ? 'bg-gradient-to-br from-[#0C0A09]/95 via-[#0C0A09]/85 to-[#120F0D]/95'
-          : 'bg-gradient-to-br from-[#2C1A0E]/80 via-[#1C1208]/65 to-[#2C1A0E]/85'"
+          ? 'bg-linear-to-br from-[#0C0A09]/95 via-[#0C0A09]/85 to-[#120F0D]/95'
+          : 'bg-linear-to-br from-[#2C1A0E]/80 via-[#1C1208]/65 to-[#2C1A0E]/85'"
       />
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#000_100%)] opacity-70" />
     </div>
@@ -216,7 +216,7 @@ const handleSubmit = async () => {
         <div
           class="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0"
           :class="isDark
-            ? 'bg-gradient-to-br from-[#2D2117] to-[#0D0906] border-[#543F2A] text-[#E5C384]'
+            ? 'bg-linear-to-br from-[#2D2117] to-[#0D0906] border-[#543F2A] text-[#E5C384]'
             : 'bg-[#8B3A2B] border-[#6A2718] text-[#FAF0E0]'"
         >
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -246,7 +246,7 @@ const handleSubmit = async () => {
           <button
             @click="!isDark && emit('toggleTheme')"
             class="px-2.5 py-1 rounded-full flex items-center gap-1 text-xs font-serif font-bold cursor-pointer transition"
-            :class="isDark ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07] shadow-xs' : 'text-[#C9A06C] hover:text-[#FAF0E0]'"
+            :class="isDark ? 'bg-linear-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07] shadow-xs' : 'text-[#C9A06C] hover:text-[#FAF0E0]'"
           >
             <Moon class="w-3 h-3" /><span>暗夜</span>
           </button>

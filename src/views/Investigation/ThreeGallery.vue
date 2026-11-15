@@ -768,117 +768,98 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
 </script>
 
 <template>
-  <div class="relative w-full h-full min-h-[380px] bg-white/80 rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col group">
+  <div class="gallery-viewport-card">
     <!-- Top Header bar with Cinematic Viewport Controls -->
-    <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-white/95 z-10 backdrop-blur-md">
+    <header class="gallery-viewport-header">
       <div class="flex items-center space-x-2">
-        <div class="w-2.5 h-2.5 rounded-full bg-coral-500 animate-none"></div>
-        <span class="text-xs font-black uppercase tracking-wider text-slate-800">
+        <div class="w-2.5 h-2.5 rounded-full bg-theme-accent"></div>
+        <span class="text-xs font-bold uppercase tracking-wider text-theme-ink">
           画廊空间架构巡视
         </span>
-        <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold border border-amber-200/70 flex items-center space-x-1">
-          <Sparkles class="w-2.5 h-2.5 text-amber-500" />
+        <span class="text-[10px] px-2 py-0.5 rounded-full bg-theme-surface text-theme-accent font-bold border border-theme-border flex items-center space-x-1">
+          <Sparkles class="w-2.5 h-2.5 text-theme-accent" />
           <span>纸雕微缩玩具屋 · 动态冷暖光影</span>
         </span>
       </div>
 
       <!-- Camera Preset Pills & 2D/3D Switcher -->
-      <div class="flex items-center space-x-1 bg-slate-100 p-0.5 rounded-xl text-xs">
+      <div class="gallery-control-group">
         <button
-          @click="handleCameraPreset('iso')"
-          :class="[
-            'px-2.5 py-1 rounded-lg transition font-bold flex items-center space-x-1',
-            cameraPreset === 'iso' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+          type="button"
+          v-for="preset in [
+            { key: 'iso', label: '等距俯瞰', icon: Camera },
+            { key: 'focus', label: '特写聚焦', icon: Eye },
+            { key: 'orbit', label: '巡游电影', icon: Video },
           ]"
+          :key="preset.key"
+          @click="handleCameraPreset(preset.key as any)"
+          class="gallery-control-btn"
+          :class="{ 'is-active': cameraPreset === preset.key }"
         >
-          <Camera class="w-3.5 h-3.5" />
-          <span>等距俯瞰</span>
+          <component :is="preset.icon" class="w-3.5 h-3.5" />
+          <span>{{ preset.label }}</span>
         </button>
 
-        <button
-          @click="handleCameraPreset('focus')"
-          :class="[
-            'px-2.5 py-1 rounded-lg transition font-bold flex items-center space-x-1',
-            cameraPreset === 'focus' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'
-          ]"
-        >
-          <Eye class="w-3.5 h-3.5 text-coral-500" />
-          <span>特写聚焦</span>
-        </button>
+        <div class="w-px h-3.5 bg-theme-border mx-1" />
 
         <button
-          @click="handleCameraPreset('orbit')"
-          :class="[
-            'px-2.5 py-1 rounded-lg transition font-bold flex items-center space-x-1',
-            cameraPreset === 'orbit' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'
-          ]"
-        >
-          <Video class="w-3.5 h-3.5 text-purple-500" />
-          <span>巡游电影</span>
-        </button>
-
-        <div class="w-px h-3.5 bg-slate-200 mx-1"></div>
-
-        <button
+          type="button"
           @click="toggleViewMode"
-          class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 font-bold flex items-center space-x-1"
+          class="gallery-control-btn"
         >
           <template v-if="viewMode === '3d'">
-            <Compass class="w-3.5 h-3.5 text-sky-500" />
+            <Compass class="w-3.5 h-3.5 text-theme-accent" />
             <span>2D蓝图</span>
           </template>
           <template v-else>
-            <Layers class="w-3.5 h-3.5 text-coral-500" />
+            <Layers class="w-3.5 h-3.5 text-theme-accent" />
             <span>3D画廊</span>
           </template>
         </button>
       </div>
-    </div>
+    </header>
 
     <!-- 3D Canvas Mount Point -->
-    <div v-if="viewMode === '3d'" ref="mountRef" class="relative flex-1 w-full min-h-[300px]">
+    <div v-if="viewMode === '3d'" ref="mountRef" class="relative flex-1 w-full min-h-75">
       <!-- Hovered room tooltip -->
       <div
         v-if="hoveredRoom"
-        class="absolute top-3 left-3 bg-white/95 border border-slate-200 rounded-2xl px-3.5 py-2 shadow-lg pointer-events-none transition-all z-20"
+        class="gallery-tooltip"
       >
         <div class="flex items-center space-x-1.5">
           <span
             class="w-2.5 h-2.5 rounded-full"
             :style="{ backgroundColor: hoveredRoom.color }"
           />
-          <span class="text-xs font-bold text-slate-800">{{ hoveredRoom.name }}</span>
+          <span class="text-xs font-bold text-theme-ink">{{ hoveredRoom.name }}</span>
           <span
             v-if="hoveredRoom.isCrimeScene"
-            class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.2 rounded font-bold"
+            class="text-[10px] bg-red-950/20 text-red-500 border border-red-500/30 px-1.5 py-0.5 rounded font-bold"
           >
             案发现场
           </span>
         </div>
-        <p class="text-[11px] text-slate-500 mt-0.5 max-w-[220px] line-clamp-1">
+        <p class="text-[11px] text-theme-muted mt-0.5 line-clamp-1">
           {{ hoveredRoom.desc }}
         </p>
       </div>
 
       <!-- Interactive Floating Hint -->
-      <div class="absolute bottom-3 left-3 text-[11px] text-slate-500 bg-white/90 px-3 py-1 rounded-full border border-slate-200 shadow-2xs pointer-events-none flex items-center space-x-1.5">
-        <Sparkles class="w-3.5 h-3.5 text-amber-500" />
+      <div class="gallery-hint-pill">
+        <Sparkles class="w-3.5 h-3.5 text-theme-accent" />
         <span>光标引导天花板冷暖聚光灯 · 悬浮纸雕展厅点击勘验搜查</span>
       </div>
     </div>
 
     <!-- 2D Blueprint Fallback View -->
-    <div v-else class="flex-1 p-4 grid grid-cols-2 gap-3 bg-slate-50/70 overflow-auto">
+    <div v-else class="flex-1 p-4 grid grid-cols-2 gap-3 bg-theme-desk overflow-auto">
       <button
         v-for="room in GALLERY_ROOMS"
         :key="room.id"
+        type="button"
         @click="handleSelectRoom(room.id)"
-        :class="[
-          'text-left p-3.5 rounded-2xl border transition relative flex flex-col justify-between',
-          selectedLocationId === room.id
-            ? 'bg-white border-coral-500 ring-2 ring-coral-100 shadow-sm'
-            : 'bg-white/90 border-slate-200 hover:border-slate-300'
-        ]"
+        class="blueprint-room-card"
+        :class="{ 'is-active': selectedLocationId === room.id }"
       >
         <div>
           <div class="flex items-center justify-between">
@@ -894,42 +875,39 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
             </span>
             <span
               v-if="room.isCrimeScene"
-              class="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold border border-red-200"
+              class="text-[10px] bg-red-950/20 text-red-500 px-1.5 py-0.5 rounded font-bold border border-red-500/30"
             >
               死者现场
             </span>
           </div>
-          <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ room.desc }}</p>
+          <p class="text-xs text-theme-muted mt-1 line-clamp-2">{{ room.desc }}</p>
         </div>
 
-        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-          <span class="text-slate-400">
+        <div class="mt-3 pt-2 border-t border-theme-border flex items-center justify-between text-[11px]">
+          <span class="text-theme-muted">
             可搜查物证: {{ room.availableClues.length }} 件
           </span>
-          <span v-if="inspectedLocations.includes(room.id)" class="text-emerald-600 font-bold">
+          <span v-if="inspectedLocations.includes(room.id)" class="text-emerald-500 font-bold">
             已勘验完成
           </span>
-          <span v-else class="text-amber-600 font-bold">
+          <span v-else class="text-theme-accent font-bold">
             待搜查
           </span>
         </div>
       </button>
     </div>
 
-    <!-- Sleek Bottom Room Swapper Dock -->
-    <div class="px-4 py-2.5 bg-slate-50/95 border-t border-slate-100 flex items-center justify-between gap-2 overflow-x-auto">
-      <span class="text-xs font-bold text-slate-400 shrink-0">快捷切房：</span>
+    <!-- Bottom Room Swapper Dock -->
+    <footer class="panel-dossier-header px-4 py-2.5 border-t border-theme-border flex items-center justify-between gap-2 overflow-x-auto">
+      <span class="text-xs font-bold text-theme-muted shrink-0">快捷切房：</span>
       <div class="flex items-center space-x-2">
         <button
           v-for="room in GALLERY_ROOMS"
           :key="room.id"
+          type="button"
           @click="handleSelectRoom(room.id)"
-          :class="[
-            'text-xs px-3 py-1.5 rounded-xl transition font-bold shrink-0 flex items-center space-x-1.5',
-            selectedLocationId === room.id
-              ? 'bg-slate-900 text-white shadow-xs'
-              : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
-          ]"
+          class="dock-room-btn"
+          :class="{ 'is-active': selectedLocationId === room.id }"
         >
           <span
             class="w-2 h-2 rounded-full"
@@ -938,6 +916,54 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
           <span>{{ room.name.split('（')[0] }}</span>
         </button>
       </div>
-    </div>
+    </footer>
   </div>
 </template>
+
+<style scoped>
+@reference "../../index.css";
+
+.gallery-viewport-card {
+  @apply panel-dossier-card relative w-full h-full min-h-95 rounded-3xl border border-theme-border shadow-sm overflow-hidden flex flex-col font-serif;
+}
+
+.gallery-viewport-header {
+  @apply panel-dossier-header flex items-center justify-between px-4 py-2.5 border-b border-theme-border z-10 backdrop-blur-md;
+}
+
+.gallery-control-group {
+  @apply flex items-center gap-1 bg-theme-surface p-0.5 rounded-xl border border-theme-border text-xs;
+}
+
+.gallery-control-btn {
+  @apply px-2.5 py-1 rounded-lg transition font-bold flex items-center gap-1 cursor-pointer text-theme-secondary hover:text-theme-ink;
+}
+
+.gallery-control-btn.is-active {
+  @apply bg-theme-accent text-white shadow-xs;
+}
+
+.gallery-tooltip {
+  @apply absolute top-3 left-3 bg-theme-surface/95 border border-theme-border rounded-2xl px-3.5 py-2 shadow-lg pointer-events-none transition-all z-20 max-w-55;
+}
+
+.gallery-hint-pill {
+  @apply absolute bottom-3 left-3 text-[11px] text-theme-muted bg-theme-surface/90 px-3 py-1 rounded-full border border-theme-border shadow-xs pointer-events-none flex items-center gap-1.5;
+}
+
+.blueprint-room-card {
+  @apply text-left p-3.5 rounded-2xl border transition relative flex flex-col justify-between cursor-pointer bg-theme-surface border-theme-border hover:border-theme-accent/60;
+}
+
+.blueprint-room-card.is-active {
+  @apply bg-theme-card border-theme-accent ring-2 ring-theme-accent/30 shadow-sm;
+}
+
+.dock-room-btn {
+  @apply text-xs px-3 py-1.5 rounded-xl transition font-bold shrink-0 flex items-center gap-1.5 border cursor-pointer bg-theme-surface text-theme-secondary border-theme-border hover:bg-theme-card-subtle;
+}
+
+.dock-room-btn.is-active {
+  @apply bg-theme-accent text-white border-theme-accent shadow-xs;
+}
+</style>

@@ -178,7 +178,7 @@ const handleCreateLink = () => {
               @click="emit('inspectClue', clue)"
             >
               <!-- Brass Pin Head -->
-              <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-tr from-amber-700 via-amber-400 to-amber-200 border border-amber-900 shadow-md z-30 flex items-center justify-center">
+              <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-linear-to-tr from-amber-700 via-amber-400 to-amber-200 border border-amber-900 shadow-md z-30 flex items-center justify-center">
                 <div class="w-1 h-1 rounded-full bg-amber-950/60" />
               </div>
 

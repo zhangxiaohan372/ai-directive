@@ -51,73 +51,66 @@ const handleJoin = () => {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto px-4 py-8 font-serif">
     <!-- Top navigation -->
     <button
+      type="button"
       @click="emit('backToHome')"
-      class="flex items-center space-x-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition mb-6 cursor-pointer"
+      class="flex items-center space-x-1.5 text-xs font-semibold text-theme-muted hover:text-theme-ink transition mb-6 cursor-pointer"
     >
-      <ArrowLeft class="w-4 h-4" />
+      <ArrowLeft class="w-4 h-4 text-theme-accent" />
       <span>返回首页</span>
     </button>
 
     <!-- Main card -->
-    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden font-serif">
+    <div class="panel-dossier-card rounded-3xl border border-theme-border shadow-xl overflow-hidden font-serif">
       <!-- Header Tabs -->
-      <div class="flex border-b border-slate-100 bg-slate-50/60 p-2">
+      <header class="panel-dossier-header flex border-b border-theme-border p-2">
         <button
+          type="button"
           @click="activeTab = 'current'"
-          class="flex-1 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-center space-x-1.5 cursor-pointer"
-          :class="
-            activeTab === 'current'
-              ? 'bg-white text-slate-800 shadow-xs'
-              : 'text-slate-500 hover:text-slate-800'
-          "
+          class="lobby-tab-btn"
+          :class="{ 'is-active': activeTab === 'current' }"
         >
-          <Users class="w-4 h-4 text-coral-500" />
+          <Users class="w-4 h-4" />
           <span>当前房间备战室</span>
         </button>
         <button
+          type="button"
           @click="activeTab = 'create'"
-          class="flex-1 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-center space-x-1.5 cursor-pointer"
-          :class="
-            activeTab === 'create'
-              ? 'bg-white text-slate-800 shadow-xs'
-              : 'text-slate-500 hover:text-slate-800'
-          "
+          class="lobby-tab-btn"
+          :class="{ 'is-active': activeTab === 'create' }"
         >
-          <Plus class="w-4 h-4 text-sky-500" />
+          <Plus class="w-4 h-4" />
           <span>创建新房间</span>
         </button>
         <button
+          type="button"
           @click="activeTab = 'join'"
-          class="flex-1 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-center space-x-1.5 cursor-pointer"
-          :class="
-            activeTab === 'join'
-              ? 'bg-white text-slate-800 shadow-xs'
-              : 'text-slate-500 hover:text-slate-800'
-          "
+          class="lobby-tab-btn"
+          :class="{ 'is-active': activeTab === 'join' }"
         >
-          <LogIn class="w-4 h-4 text-purple-500" />
+          <LogIn class="w-4 h-4" />
           <span>输入房间号加入</span>
         </button>
-      </div>
+      </header>
 
       <!-- Tab 1: Current Room -->
       <div v-if="activeTab === 'current'" class="p-6 md:p-8 space-y-6">
         <!-- Room code banner -->
-        <div class="p-4 rounded-2xl bg-coral-50/50 border border-coral-200/70 flex items-center justify-between">
+        <div class="p-4 rounded-2xl bg-theme-card-subtle border border-theme-border flex items-center justify-between">
           <div>
-            <span class="text-[11px] font-bold text-coral-700 uppercase tracking-wider block font-mono">
+            <span class="text-[11px] font-bold text-theme-accent uppercase tracking-wider block font-mono">
               房间联机口令 (Room Code)
             </span>
-            <span class="text-2xl font-black text-slate-900 tracking-wider font-mono">
+            <span class="text-2xl font-black text-theme-ink tracking-wider font-mono">
               {{ roomCode }}
             </span>
           </div>
           <button
+            type="button"
             @click="handleCopyCode(roomCode)"
-            class="px-3 py-1.5 rounded-xl bg-white border border-coral-200 text-xs font-bold text-coral-600 hover:bg-coral-50 transition flex items-center space-x-1 cursor-pointer"
+            class="px-3 py-1.5 rounded-xl bg-theme-surface border border-theme-border text-xs font-bold text-theme-accent hover:bg-theme-card transition flex items-center space-x-1 cursor-pointer shadow-xs"
           >
             <Check v-if="copied" class="w-3.5 h-3.5" />
             <Copy v-else class="w-3.5 h-3.5" />
@@ -128,13 +121,14 @@ const handleJoin = () => {
         <!-- Players list -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <h4 class="text-xs font-extrabold text-slate-700">
+            <h4 class="text-xs font-extrabold text-theme-ink">
               当前入座侦探 ({{ players.length }}/4 人)：
             </h4>
             <button
               v-if="players.length < 4"
+              type="button"
               @click="emit('addBotPlayer')"
-              class="text-xs font-semibold text-sky-600 hover:text-sky-700 flex items-center space-x-1 cursor-pointer"
+              class="text-xs font-semibold text-theme-accent hover:underline flex items-center space-x-1 cursor-pointer"
             >
               <Bot class="w-3.5 h-3.5" />
               <span>快速补充 AI 探友</span>
@@ -145,29 +139,29 @@ const handleJoin = () => {
             <div
               v-for="p in players"
               :key="p.id"
-              class="p-3.5 rounded-2xl border border-slate-200/80 bg-white flex items-center justify-between shadow-2xs"
+              class="p-3.5 rounded-2xl border border-theme-border bg-theme-surface flex items-center justify-between shadow-xs"
             >
               <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg font-bold">
+                <div class="w-10 h-10 rounded-xl bg-theme-card-subtle border border-theme-border flex items-center justify-center text-sm font-bold text-theme-accent">
                   {{ p.avatar }}
                 </div>
                 <div>
-                  <div class="text-xs font-bold text-slate-800 flex items-center space-x-1">
+                  <div class="text-xs font-bold text-theme-ink flex items-center space-x-1">
                     <span>{{ p.name }}</span>
-                    <span v-if="p.isHost" class="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 font-bold font-mono">
+                    <span v-if="p.isHost" class="text-[9px] px-1.5 py-0.5 rounded-full bg-theme-accent text-white font-bold font-mono">
                       房主
                     </span>
-                    <span v-if="p.isBot" class="text-[9px] px-1.5 py-0.2 rounded-full bg-sky-100 text-sky-800 font-bold font-mono">
+                    <span v-if="p.isBot" class="text-[9px] px-1.5 py-0.5 rounded-full border border-theme-border text-theme-accent font-bold font-mono">
                       AI探友
                     </span>
                   </div>
-                  <div class="text-[10px] text-slate-400 mt-0.5">
+                  <div class="text-[10px] text-theme-muted mt-0.5">
                     {{ p.isBot ? '智能协作助手' : '真人玩家' }}
                   </div>
                 </div>
               </div>
 
-              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center space-x-1">
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-950/20 text-emerald-500 border border-emerald-500/30 flex items-center space-x-1">
                 <UserCheck class="w-3 h-3" />
                 <span>已就绪</span>
               </span>
@@ -176,46 +170,48 @@ const handleJoin = () => {
         </div>
 
         <!-- Launch button -->
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-          <span class="text-xs text-slate-400">
+        <footer class="pt-4 border-t border-theme-border flex items-center justify-between">
+          <span class="text-xs text-theme-muted">
             支持 2~4 名侦探开局，全员已就绪！
           </span>
 
           <button
+            type="button"
             @click="emit('startGame')"
-            class="px-8 py-3 rounded-2xl bg-slate-900 text-white font-extrabold text-sm hover:bg-slate-800 transition shadow-md flex items-center space-x-2 cursor-pointer"
+            class="px-8 py-3 rounded-2xl bg-theme-accent hover:bg-theme-accent-hover text-white font-extrabold text-sm transition shadow-md flex items-center space-x-2 cursor-pointer active:scale-95"
           >
             <span>正式开始调查</span>
             <Play class="w-4 h-4 fill-white text-white" />
           </button>
-        </div>
+        </footer>
       </div>
 
       <!-- Tab 2: Create Room -->
       <div v-if="activeTab === 'create'" class="p-6 md:p-8 space-y-5">
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1.5">
+          <label class="text-xs font-bold text-theme-ink block mb-1.5">
             你的侦探昵称：
           </label>
           <input
             type="text"
             v-model="hostNameInput"
-            class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-200"
+            class="w-full text-xs p-3 rounded-xl border border-theme-border bg-theme-surface text-theme-ink focus:outline-none focus:border-theme-accent"
           />
         </div>
 
-        <label class="flex items-center space-x-2.5 text-xs text-slate-700 cursor-pointer">
+        <label class="flex items-center space-x-2.5 text-xs text-theme-secondary cursor-pointer">
           <input
             type="checkbox"
             v-model="includeBotsCheck"
-            class="rounded text-sky-600 focus:ring-sky-400"
+            class="rounded accent-theme-accent"
           />
           <span>自动补充 2 名模拟探友（侦探小林、解密达人阿强）以供测试</span>
         </label>
 
         <button
+          type="button"
           @click="handleCreate"
-          class="w-full py-3 rounded-2xl bg-sky-500 text-white font-extrabold text-xs hover:bg-sky-600 transition shadow-sm cursor-pointer"
+          class="w-full py-3 rounded-2xl bg-theme-accent hover:bg-theme-accent-hover text-white font-extrabold text-xs transition shadow-sm cursor-pointer"
         >
           创建并进入房间
         </button>
@@ -224,7 +220,7 @@ const handleJoin = () => {
       <!-- Tab 3: Join Room -->
       <div v-if="activeTab === 'join'" class="p-6 md:p-8 space-y-5">
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1.5">
+          <label class="text-xs font-bold text-theme-ink block mb-1.5">
             房间口令代码 (Room Code)：
           </label>
           <input
@@ -232,23 +228,24 @@ const handleJoin = () => {
             :value="joinCodeInput"
             @input="joinCodeInput = (($event.target as HTMLInputElement).value || '').toUpperCase()"
             placeholder="例如: MIST"
-            class="w-full text-sm font-mono font-bold p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-200 tracking-wider"
+            class="w-full text-sm font-mono font-bold p-3 rounded-xl border border-theme-border bg-theme-surface text-theme-ink focus:outline-none focus:border-theme-accent tracking-wider"
           />
         </div>
 
         <div>
-          <label class="text-xs font-bold text-slate-700 block mb-1.5">你的昵称：</label>
+          <label class="text-xs font-bold text-theme-ink block mb-1.5">你的昵称：</label>
           <input
             type="text"
             v-model="joinNameInput"
-            class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-200"
+            class="w-full text-xs p-3 rounded-xl border border-theme-border bg-theme-surface text-theme-ink focus:outline-none focus:border-theme-accent"
           />
         </div>
 
         <button
+          type="button"
           @click="handleJoin"
           :disabled="!joinCodeInput.trim()"
-          class="w-full py-3 rounded-2xl bg-purple-600 text-white font-extrabold text-xs hover:bg-purple-700 disabled:opacity-40 transition shadow-sm cursor-pointer"
+          class="w-full py-3 rounded-2xl bg-theme-accent hover:bg-theme-accent-hover text-white font-extrabold text-xs disabled:opacity-40 transition shadow-sm cursor-pointer"
         >
           加入指定房间
         </button>
@@ -256,3 +253,15 @@ const handleJoin = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@reference "../../index.css";
+
+.lobby-tab-btn {
+  @apply flex-1 py-2.5 rounded-2xl text-xs font-extrabold transition flex items-center justify-center gap-1.5 cursor-pointer text-theme-secondary hover:text-theme-ink;
+}
+
+.lobby-tab-btn.is-active {
+  @apply bg-theme-accent text-white shadow-xs;
+}
+</style>

@@ -24,9 +24,6 @@ import {
   Sun,
   Moon,
   ShieldAlert,
-  BadgeCheck,
-  LogOut,
-  RotateCcw,
 } from 'lucide-vue-next';
 import { useAuth } from '../../composables/useAuth';
 
@@ -103,8 +100,7 @@ const searchQuery = ref('');
 const isMuted = ref(sound.getIsMuted());
 const selectedCaseModal = ref<CaseCardItem | null>(null);
 
-const { currentUser, is401Expired, trigger401, openLogin, logout } = useAuth();
-const isUserMenuOpen = ref(false);
+const { currentUser, trigger401, openLogin } = useAuth();
 
 const isDark = computed(() => props.themeMode === 'dark');
 
@@ -154,55 +150,21 @@ const handleScrollToCases = () => {
 </script>
 
 <template>
-  <div
-    class="w-full min-h-screen font-sans flex flex-col selection:bg-amber-600/30 overflow-x-hidden transition-colors duration-300"
-    :class="isDark ? 'bg-[#0C0A09] text-[#E5DCD0]' : 'bg-[#F5EFE6] text-[#2C241E]'"
-  >
+  <div class="w-full min-h-screen font-serif flex flex-col bg-theme-desk text-theme-ink selection:bg-theme-accent/20 overflow-x-hidden transition-colors duration-300">
     <!-- 1. TOP NAVBAR WITH GLOBAL THEME CONTROL -->
-    <header
-      class="h-16 px-6 sm:px-10 border-b flex items-center justify-between shrink-0 sticky top-0 z-40 backdrop-blur-md transition-colors duration-300"
-      :class="isDark ? 'bg-[#120F0D]/95 border-[#2C2117]' : 'bg-[#FAF7F2]/95 border-[#E8DFD5]'"
-    >
+    <header class="h-16 px-6 sm:px-10 border-b border-theme-border bg-theme-card/95 flex items-center justify-between shrink-0 sticky top-0 z-40 backdrop-blur-md transition-colors duration-300">
       <!-- Left: Brand Logo & Title -->
       <div class="flex items-center gap-3">
-        <div
-          class="w-9 h-9 rounded-xl border flex items-center justify-center shadow-inner shrink-0"
-          :class="
-            isDark
-              ? 'bg-gradient-to-br from-[#2D2115] via-[#1A130C] to-[#0D0906] border-[#543F2A] text-[#E5C384]'
-              : 'bg-[#8B3A2B] border-[#783023] text-white shadow-xs ring-2 ring-[#8B3A2B]/10'
-          "
-        >
-          <svg
-            class="w-5 h-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 15c0-4 3.5-7 8-7s8 3 8 7" />
-            <path d="M2 15c2-1 4-1 6-1h8c2 0 4 0 6 1" />
-            <path d="M12 4v4" />
-            <path d="M10 4h4" />
-            <circle cx="15.5" cy="15.5" r="3.5" />
-            <line x1="18" y1="18" x2="21.5" y2="21.5" />
-          </svg>
+        <div class="w-9 h-9 rounded-xl border border-theme-border bg-theme-surface text-theme-accent flex items-center justify-center shadow-xs shrink-0 font-serif font-black text-sm">
+          密
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1
-              class="font-serif font-black text-base tracking-wide leading-none"
-              :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'"
-            >
+            <h1 class="font-serif font-black text-base text-theme-ink tracking-wide leading-none">
               AI Detective
             </h1>
           </div>
-          <p
-            class="text-[10px] font-serif tracking-widest mt-0.5"
-            :class="isDark ? 'text-[#A89073]' : 'text-[#8C7E72]'"
-          >
+          <p class="text-[10px] font-serif tracking-widest mt-0.5 text-theme-muted">
             智能探案平台
           </p>
         </div>
@@ -211,15 +173,15 @@ const handleScrollToCases = () => {
       <!-- Center: Top Navigation Links -->
       <nav class="hidden md:flex items-center gap-7 text-xs font-serif">
         <button
-          class="flex items-center gap-1.5 font-bold border-b-2 pb-0.5 cursor-pointer"
-          :class="isDark ? 'text-[#F5E2BD] border-[#D4A359]' : 'text-[#8B3A2B] border-[#8B3A2B]'"
+          type="button"
+          class="flex items-center gap-1.5 font-bold border-b-2 pb-0.5 border-theme-accent text-theme-accent cursor-pointer"
         >
           <span>首页</span>
         </button>
         <button
+          type="button"
           @click="sound.playPaperRustle(); emit('openStudio');"
-          class="flex items-center gap-1.5 transition-colors cursor-pointer"
-          :class="isDark ? 'text-[#A89073] hover:text-[#F3EFEA]' : 'text-[#786B60] hover:text-[#1C1917]'"
+          class="flex items-center gap-1.5 text-theme-muted hover:text-theme-ink transition-colors cursor-pointer"
         >
           <span>案件创作</span>
         </button>
@@ -229,27 +191,24 @@ const handleScrollToCases = () => {
       <div class="flex items-center gap-2.5 sm:gap-3">
         <!-- GLOBAL THEME SWITCHER -->
         <div
-          class="p-1 rounded-full border flex items-center gap-1 transition-all shadow-xs shrink-0"
-          :class="isDark ? 'bg-[#18130E] border-[#3E2D1E]' : 'bg-white border-[#E0D5C7]'"
+          class="p-1 rounded-full border border-theme-border bg-theme-surface flex items-center gap-1 transition-all shadow-xs shrink-0"
           title="全局主题切换：暗夜书房 / 白昼手稿"
         >
           <button
+            type="button"
             @click="if (isDark) emit('toggleTheme');"
-            class="px-3 py-1 rounded-full flex items-center gap-1.5 transition text-xs font-serif font-bold cursor-pointer"
-            :class="!isDark ? 'bg-[#8B3A2B] text-white shadow-xs' : 'text-[#8C765E] hover:text-[#E5C384]'"
+            class="portal-theme-switch-btn"
+            :class="{ 'is-active': !isDark }"
             title="切换为白昼手稿羊皮纸风格（全平台同步）"
           >
             <Sun class="w-3.5 h-3.5" />
             <span>白昼</span>
           </button>
           <button
+            type="button"
             @click="if (!isDark) emit('toggleTheme');"
-            class="px-3 py-1 rounded-full flex items-center gap-1.5 transition text-xs font-serif font-bold cursor-pointer"
-            :class="
-              isDark
-                ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07] shadow-xs'
-                : 'text-[#8C7E72] hover:text-[#1C1917]'
-            "
+            class="portal-theme-switch-btn"
+            :class="{ 'is-active': isDark }"
             title="切换为暗夜侦探书房风格（全平台同步）"
           >
             <Moon class="w-3.5 h-3.5" />
@@ -259,25 +218,18 @@ const handleScrollToCases = () => {
 
         <!-- Search Input Bar -->
         <div class="relative hidden sm:flex items-center">
-          <Search
-            class="w-3.5 h-3.5 absolute left-3 pointer-events-none"
-            :class="isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]'"
-          />
+          <Search class="w-3.5 h-3.5 absolute left-3 pointer-events-none text-theme-muted" />
           <input
             type="text"
             v-model="searchQuery"
             placeholder="搜索案件..."
-            class="w-36 lg:w-48 pl-9 pr-3 py-1.5 rounded-full border text-xs transition-all focus:outline-none focus:w-56"
-            :class="
-              isDark
-                ? 'bg-[#1A140F] border-[#3A2B1D] text-[#E5DCD0] placeholder-[#8C765E] focus:border-[#C9942D]'
-                : 'bg-white border-[#E0D5C7] text-[#1C1917] placeholder-[#8C7E72] focus:border-[#8B3A2B]'
-            "
+            class="w-36 lg:w-48 pl-9 pr-3 py-1.5 rounded-full border border-theme-border bg-theme-surface text-theme-ink placeholder-theme-muted text-xs transition-all focus:outline-none focus:w-56 focus:border-theme-accent"
           />
           <button
             v-if="searchQuery"
+            type="button"
             @click="searchQuery = ''"
-            class="absolute right-2.5 opacity-60 hover:opacity-100 cursor-pointer"
+            class="absolute right-2.5 text-theme-muted hover:text-theme-ink cursor-pointer"
           >
             <X class="w-3 h-3" />
           </button>
@@ -285,28 +237,20 @@ const handleScrollToCases = () => {
 
         <!-- Soundscape Ambient Toggle -->
         <button
+          type="button"
           @click="handleToggleSound"
-          class="p-2 rounded-full border transition cursor-pointer"
-          :class="
-            isDark
-              ? 'bg-[#18130E] hover:bg-[#241B13] text-[#A89073] hover:text-[#E5C384] border-[#3A2B1D]'
-              : 'bg-white hover:bg-[#F2ECE4] text-[#8C7E72] hover:text-[#8B3A2B] border-[#E0D5C7]'
-          "
+          class="nav-icon-btn"
           :title="isMuted ? '开启环境悬疑声景' : '静音'"
         >
           <VolumeX v-if="isMuted" class="w-4 h-4 opacity-50" />
-          <Volume2 v-else class="w-4 h-4 animate-pulse" :class="isDark ? 'text-[#C9942D]' : 'text-[#8B3A2B]'" />
+          <Volume2 v-else class="w-4 h-4 text-theme-accent animate-pulse" />
         </button>
 
         <!-- Simulated 401 Unauthorized Trigger Button -->
         <button
+          type="button"
           @click="trigger401('用户在首页顶栏主动触发 401 模拟：会话凭证过期，请重新验证侦探档案。')"
-          class="flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-mono transition cursor-pointer active:scale-95 shadow-xs"
-          :class="
-            isDark
-              ? 'bg-[#2A100C]/80 border-[#681E15] text-[#DF5343] hover:bg-[#3E1410] hover:border-[#DF5343]'
-              : 'bg-[#FCEDEB] border-[#F2C1BA] text-[#8B3A2B] hover:bg-[#F8DED9]'
-          "
+          class="portal-sim-btn"
           title="点击模拟触发 HTTP 401 登录失效，展示侦探档案核验界面"
         >
           <ShieldAlert class="w-3.5 h-3.5 shrink-0" />
@@ -316,28 +260,17 @@ const handleScrollToCases = () => {
         <!-- User Detective Profile Stamp / Login Trigger -->
         <div class="relative">
           <button
+            type="button"
             @click="openLogin"
-            class="flex items-center gap-2 px-2 py-1 rounded-full border transition cursor-pointer active:scale-95 shadow-xs"
-            :class="
-              isDark
-                ? 'border-[#523A25] bg-[#221810] text-[#E8C88B] hover:border-[#C9942D]'
-                : 'border-[#E0D5C7] bg-[#FAF7F2] text-[#8B3A2B] hover:border-[#8B3A2B]'
-            "
+            class="portal-profile-btn"
             :title="`当前侦探：${currentUser?.name || '未登录'} [${currentUser?.badgeNo || '无警号'}] - 点击切换或验证`"
           >
-            <div
-              class="w-6 h-6 rounded-full overflow-hidden border flex items-center justify-center text-xs shrink-0 font-serif font-bold"
-              :class="
-                isDark
-                  ? 'border-[#C9942D]/40 bg-[#2D2015] text-[#E5C384]'
-                  : 'border-[#8B3A2B]/30 bg-[#8B3A2B] text-white'
-              "
-            >
+            <div class="w-6 h-6 rounded-full overflow-hidden border border-theme-border bg-theme-card-subtle text-theme-accent flex items-center justify-center text-xs shrink-0 font-serif font-bold">
               {{ currentUser?.initials || '访' }}
             </div>
             <div class="hidden lg:flex flex-col text-left leading-none font-serif pr-1">
-              <span class="text-xs font-bold truncate max-w-[90px]">{{ currentUser?.name || '未登录' }}</span>
-              <span class="text-[9px] font-mono opacity-70">{{ currentUser?.badgeNo || '点击登录' }}</span>
+              <span class="text-xs font-bold truncate max-w-22.5">{{ currentUser?.name || '未登录' }}</span>
+              <span class="text-[9px] font-mono text-theme-muted">{{ currentUser?.badgeNo || '点击登录' }}</span>
             </div>
           </button>
         </div>
@@ -345,90 +278,49 @@ const handleScrollToCases = () => {
     </header>
 
     <!-- 2. HERO SECTION WITH DETECTIVE DESK BACKGROUND -->
-    <section class="relative w-full h-[540px] sm:h-[580px] lg:h-[620px] overflow-hidden flex items-center">
-      <!-- Background Image Layer -->
-      <img
-        :src="heroDeskImage"
-        alt="AI Detective Desk"
-        class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none scale-[1.01] transition-all duration-700"
-        :class="isDark ? 'brightness-100 contrast-100' : 'brightness-105 contrast-[0.92] sepia-[0.2]'"
-      />
-
-      <!-- Cinematic Darkness or Warm Daytime Overlay -->
-      <div
-        class="absolute inset-0 pointer-events-none transition-colors duration-500"
-        :class="
-          isDark
-            ? 'bg-gradient-to-r from-[#0C0A09]/95 via-[#0C0A09]/75 to-transparent'
-            : 'bg-gradient-to-r from-[#F5EFE6] via-[#F5EFE6]/92 to-[#F5EFE6]/40'
-        "
-      />
-      <div
-        class="absolute inset-0 pointer-events-none transition-colors duration-500"
-        :class="
-          isDark
-            ? 'bg-gradient-to-t from-[#0C0A09] via-transparent to-[#0C0A09]/40'
-            : 'bg-gradient-to-t from-[#F5EFE6] via-transparent to-[#FAF7F2]/60'
-        "
-      />
+    <section class="portal-hero-section">
+      <!-- Background Image & Atmospheric Mask Layer -->
+      <div class="portal-hero-backdrop">
+        <img
+          :src="heroDeskImage"
+          alt="AI Detective Desk"
+          class="portal-hero-img"
+        />
+        <div class="portal-hero-mask" />
+      </div>
 
       <!-- Hero Content Block -->
       <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 w-full">
         <div class="max-w-2xl space-y-4 sm:space-y-5">
-          <h2
-            class="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-serif font-black tracking-tight leading-[1.18]"
-            :class="
-              isDark
-                ? 'text-[#F3EFEA] drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)]'
-                : 'text-[#1C1917] drop-shadow-sm'
-            "
-          >
+          <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-serif font-black tracking-tight leading-[1.18] text-theme-ink drop-shadow-sm">
             让每个人都能成为
             <br />
-            <span
-              class="text-transparent bg-clip-text"
-              :class="
-                isDark
-                  ? 'bg-gradient-to-r from-[#F5E2BD] via-[#DFB36C] to-[#C9942D]'
-                  : 'bg-gradient-to-r from-[#8B3A2B] via-[#C9942D] to-[#8B3A2B]'
-              "
-            >
+            <span class="text-theme-accent">
               案件创作者，也能成为侦探
             </span>
           </h2>
 
-          <p
-            class="text-sm sm:text-base md:text-lg font-serif leading-relaxed"
-            :class="isDark ? 'text-[#C7B59D] drop-shadow-md' : 'text-[#5C4F44]'"
-          >
+          <p class="text-sm sm:text-base md:text-lg font-serif leading-relaxed text-theme-secondary">
             上传剧本，AI 为你生成完整案件，开启沉浸式的推理之旅
           </p>
 
           <!-- CTA Buttons -->
           <div class="flex flex-wrap items-center gap-4 pt-2">
             <button
+              type="button"
               @click="sound.playPaperRustle(); emit('openStudio');"
-              class="flex items-center gap-2.5 px-6 py-3.5 rounded-full font-serif font-black text-sm tracking-wide shadow-xl cursor-pointer active:scale-95 transition-all"
-              :class="
-                isDark
-                  ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] hover:from-[#E8C485] hover:to-[#D4A359] text-[#140E07] shadow-amber-950/40'
-                  : 'bg-[#8B3A2B] hover:bg-[#783023] text-white shadow-red-950/20'
-              "
+              class="flex items-center gap-2.5 px-6 py-3.5 rounded-full font-serif font-black text-sm tracking-wide bg-theme-accent hover:bg-theme-accent-hover text-white shadow-xl cursor-pointer active:scale-95 transition-all"
             >
               <Play class="w-4 h-4 fill-current" />
               <span>开始创作 →</span>
             </button>
 
             <button
+              type="button"
               @click="handleScrollToCases"
-              class="flex items-center gap-2 px-6 py-3.5 rounded-full font-serif font-medium text-sm transition-all cursor-pointer shadow-md border"
-              :class="
-                isDark
-                  ? 'bg-[#18130E]/85 hover:bg-[#251D15] text-[#E8C88B] border-[#523A25] hover:border-[#8C683F]'
-                  : 'bg-white hover:bg-[#FAF7F2] text-[#8B3A2B] border-[#E0D5C7]'
-              "
+              class="flex items-center gap-2 px-6 py-3.5 rounded-full font-serif font-medium text-sm border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-ink transition-all cursor-pointer shadow-md"
             >
-              <Compass class="w-4 h-4" />
+              <Compass class="w-4 h-4 text-theme-accent" />
               <span>探索案例</span>
             </button>
           </div>
@@ -438,77 +330,58 @@ const handleScrollToCases = () => {
 
     <!-- 3. FOUR FEATURE PILLARS BAR -->
     <section class="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 -mt-10 sm:-mt-12 w-full">
-      <div
-        class="rounded-2xl border backdrop-blur-md p-5 sm:p-6 shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x transition-colors duration-300"
-        :class="
-          isDark
-            ? 'bg-[#14100D]/90 border-[#3B2B1D] divide-[#2C2015]'
-            : 'bg-white/95 border-[#EBE4DC] divide-[#F0EAE1]'
-        "
-      >
-        <div class="flex items-center gap-4 pt-3 sm:pt-0 sm:px-3">
-          <div
-            class="w-12 h-12 rounded-xl border flex items-center justify-center shrink-0"
-            :class="isDark ? 'bg-[#221810] border-[#523A25] text-[#E8C88B]' : 'bg-[#FAF7F2] border-[#EAE1D5] text-[#8B3A2B]'"
-          >
+      <div class="rounded-2xl border border-theme-border bg-theme-surface/95 backdrop-blur-md p-5 sm:p-6 shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-theme-border transition-colors duration-300">
+        <div class="feature-pillar-box">
+          <div class="feature-pillar-icon">
             <FileText class="w-6 h-6" />
           </div>
           <div>
-            <h3 class="font-serif font-bold text-sm" :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'">
+            <h3 class="font-serif font-bold text-sm text-theme-ink">
               多格式支持
             </h3>
-            <p class="text-xs font-serif mt-0.5" :class="isDark ? 'text-[#9E866D]' : 'text-[#786B60]'">
+            <p class="text-xs font-serif mt-0.5 text-theme-muted">
               支持 PDF / Word / Markdown
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-3 sm:pt-0 sm:px-3">
-          <div
-            class="w-12 h-12 rounded-xl border flex items-center justify-center shrink-0"
-            :class="isDark ? 'bg-[#221810] border-[#523A25] text-[#E8C88B]' : 'bg-[#FAF7F2] border-[#EAE1D5] text-[#8B3A2B]'"
-          >
+        <div class="feature-pillar-box">
+          <div class="feature-pillar-icon">
             <GitGraph class="w-6 h-6" />
           </div>
           <div>
-            <h3 class="font-serif font-bold text-sm" :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'">
+            <h3 class="font-serif font-bold text-sm text-theme-ink">
               智能创作
             </h3>
-            <p class="text-xs font-serif mt-0.5" :class="isDark ? 'text-[#9E866D]' : 'text-[#786B60]'">
+            <p class="text-xs font-serif mt-0.5 text-theme-muted">
               基于 LangGraph 的工作流
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-3 sm:pt-0 sm:px-3">
-          <div
-            class="w-12 h-12 rounded-xl border flex items-center justify-center shrink-0"
-            :class="isDark ? 'bg-[#221810] border-[#523A25] text-[#E8C88B]' : 'bg-[#FAF7F2] border-[#EAE1D5] text-[#8B3A2B]'"
-          >
+        <div class="feature-pillar-box">
+          <div class="feature-pillar-icon">
             <Gamepad2 class="w-6 h-6" />
           </div>
           <div>
-            <h3 class="font-serif font-bold text-sm" :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'">
+            <h3 class="font-serif font-bold text-sm text-theme-ink">
               沉浸推理
             </h3>
-            <p class="text-xs font-serif mt-0.5" :class="isDark ? 'text-[#9E866D]' : 'text-[#786B60]'">
+            <p class="text-xs font-serif mt-0.5 text-theme-muted">
               与 AI NPC 展开互动
             </p>
           </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-3 sm:pt-0 sm:px-3">
-          <div
-            class="w-12 h-12 rounded-xl border flex items-center justify-center shrink-0"
-            :class="isDark ? 'bg-[#221810] border-[#523A25] text-[#E8C88B]' : 'bg-[#FAF7F2] border-[#EAE1D5] text-[#8B3A2B]'"
-          >
+        <div class="feature-pillar-box">
+          <div class="feature-pillar-icon">
             <ShieldCheck class="w-6 h-6 text-emerald-500" />
           </div>
           <div>
-            <h3 class="font-serif font-bold text-sm" :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'">
+            <h3 class="font-serif font-bold text-sm text-theme-ink">
               逻辑严谨
             </h3>
-            <p class="text-xs font-serif mt-0.5" :class="isDark ? 'text-[#9E866D]' : 'text-[#786B60]'">
+            <p class="text-xs font-serif mt-0.5 text-theme-muted">
               多重校验，保证可玩性
             </p>
           </div>
@@ -523,22 +396,19 @@ const handleScrollToCases = () => {
     >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-1 h-6 rounded-full" :class="isDark ? 'bg-[#C9942D]' : 'bg-[#8B3A2B]'" />
-          <h2 class="font-serif font-black text-xl sm:text-2xl tracking-tight" :class="isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]'">
+          <div class="w-1 h-6 rounded-full bg-theme-accent" />
+          <h2 class="font-serif font-black text-xl sm:text-2xl tracking-tight text-theme-ink">
             热门案件
           </h2>
-          <span
-            class="hidden sm:inline text-xs font-serif border-l pl-3"
-            :class="isDark ? 'text-[#8C765E] border-[#3D2D1E]' : 'text-[#8C7E72] border-[#E0D5C7]'"
-          >
+          <span class="hidden sm:inline text-xs font-serif border-l border-theme-border pl-3 text-theme-muted">
             探索精选案件，开启你的推理之旅
           </span>
         </div>
 
         <button
+          type="button"
           @click="sound.playPaperRustle(); emit('openStudio');"
-          class="flex items-center gap-1.5 text-xs font-serif transition-colors cursor-pointer group"
-          :class="isDark ? 'text-[#A89073] hover:text-[#E8C88B]' : 'text-[#8C7E72] hover:text-[#8B3A2B]'"
+          class="flex items-center gap-1.5 text-xs font-serif text-theme-muted hover:text-theme-accent transition-colors cursor-pointer group"
         >
           <span>查看更多</span>
           <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -550,12 +420,7 @@ const handleScrollToCases = () => {
           v-for="caseItem in filteredCases"
           :key="caseItem.id"
           @click="handleCaseCardClick(caseItem)"
-          class="group relative rounded-2xl overflow-hidden border transition-all duration-300 shadow-xl flex flex-col justify-between cursor-pointer"
-          :class="
-            isDark
-              ? 'bg-[#14100D] border-[#2E2217] hover:border-[#7A5B36]'
-              : 'bg-white border-[#EBE4DC] hover:border-[#D9CFC4]'
-          "
+          class="case-card group"
         >
           <div class="relative h-44 w-full overflow-hidden">
             <img
@@ -563,20 +428,10 @@ const handleScrollToCases = () => {
               :alt="caseItem.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            <div
-              class="absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
-              :class="isDark ? 'from-[#14100D]' : 'from-white'"
-            />
+            <div class="absolute inset-0 bg-linear-to-t from-theme-card via-transparent to-transparent" />
 
-            <div
-              class="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full border backdrop-blur-md text-[11px] font-mono shadow-md"
-              :class="
-                isDark
-                  ? 'bg-[#0C0A09]/80 border-[#4A3725] text-[#E8C88B]'
-                  : 'bg-white/90 border-[#E0D5C7] text-[#8B3A2B]'
-              "
-            >
-              <Flame class="w-3 h-3 text-[#FF7A00] fill-current" />
+            <div class="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full border border-theme-border bg-theme-surface/90 text-theme-accent text-[11px] font-mono shadow-md backdrop-blur-md">
+              <Flame class="w-3 h-3 text-amber-500 fill-current" />
               <span>热度 {{ caseItem.heat }}</span>
             </div>
 
@@ -590,10 +445,7 @@ const handleScrollToCases = () => {
 
           <div class="p-4 pt-1 flex flex-col justify-between flex-1">
             <div>
-              <h3
-                class="font-serif font-bold text-sm sm:text-base transition-colors mb-2 truncate"
-                :class="isDark ? 'text-[#F3EFEA] group-hover:text-[#E8C88B]' : 'text-[#1C1917] group-hover:text-[#8B3A2B]'"
-              >
+              <h3 class="font-serif font-bold text-sm sm:text-base text-theme-ink group-hover:text-theme-accent transition-colors mb-2 truncate">
                 {{ caseItem.title }}
               </h3>
 
@@ -601,34 +453,19 @@ const handleScrollToCases = () => {
                 <span
                   v-for="tag in caseItem.tags"
                   :key="tag"
-                  class="px-2 py-0.5 rounded text-[10px] font-serif"
-                  :class="
-                    isDark
-                      ? 'bg-[#1C1510] border border-[#3A2A1D] text-[#A89073]'
-                      : 'bg-[#F5E7DF] text-[#8B3A2B]'
-                  "
+                  class="tag-pill"
                 >
                   {{ tag }}
                 </span>
               </div>
             </div>
 
-            <div
-              class="flex items-center justify-between pt-2 border-t"
-              :class="isDark ? 'border-[#221811]' : 'border-[#F0EAE1]'"
-            >
-              <span class="text-[11px] font-serif" :class="isDark ? 'text-[#7A6652]' : 'text-[#8C7E72]'">
+            <div class="flex items-center justify-between pt-2 border-t border-theme-border">
+              <span class="text-[11px] font-serif text-theme-muted">
                 {{ caseItem.statusText }}
               </span>
-              <div
-                class="w-7 h-7 rounded-full border flex items-center justify-center transition-all"
-                :class="
-                  isDark
-                    ? 'bg-[#1F1711] border-[#3E2C1D] text-[#A89073] group-hover:bg-[#C9942D] group-hover:border-[#C9942D] group-hover:text-[#140E07]'
-                    : 'bg-[#FAF7F2] border-[#E0D5C7] text-[#8C7E72] group-hover:bg-[#8B3A2B] group-hover:border-[#8B3A2B] group-hover:text-white'
-                "
-              >
-                <ChevronRight class="w-4 h-4 stroke-[2.5]" />
+              <div class="w-7 h-7 rounded-full border border-theme-border bg-theme-surface text-theme-muted group-hover:bg-theme-accent group-hover:border-theme-accent group-hover:text-white flex items-center justify-center transition-all">
+                <ChevronRight class="w-4 h-4 stroke-2" />
               </div>
             </div>
           </div>
@@ -641,33 +478,31 @@ const handleScrollToCases = () => {
       v-if="selectedCaseModal"
       class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-serif"
     >
-      <div
-        class="w-full max-w-lg rounded-2xl border p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200"
-        :class="isDark ? 'bg-[#14100D] border-[#4A3723] text-[#E5DCD0]' : 'bg-white border-[#E0D5C7] text-[#1C1917]'"
-      >
-        <div class="flex items-center justify-between pb-3 border-b" :class="isDark ? 'border-[#2C2117]' : 'border-[#F0EAE1]'">
+      <div class="w-full max-w-lg rounded-2xl border border-theme-border bg-theme-card text-theme-ink p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-theme-border">
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full" :class="isDark ? 'bg-[#C9942D]' : 'bg-[#8B3A2B]'" />
-            <h3 class="font-serif font-black text-lg" :class="isDark ? 'text-[#F1DFBA]' : 'text-[#1C1917]'">
+            <span class="w-2 h-2 rounded-full bg-theme-accent" />
+            <h3 class="font-serif font-black text-lg text-theme-ink">
               {{ selectedCaseModal.title }}
             </h3>
           </div>
           <button
+            type="button"
             @click="selectedCaseModal = null"
-            class="p-1 rounded opacity-60 hover:opacity-100 transition cursor-pointer"
+            class="p-1 rounded opacity-60 hover:opacity-100 transition cursor-pointer text-theme-muted hover:text-theme-ink"
           >
             <X class="w-5 h-5" />
           </button>
         </div>
 
-        <div class="h-44 w-full rounded-xl overflow-hidden border border-black/20 relative">
+        <div class="h-44 w-full rounded-xl overflow-hidden border border-theme-border relative">
           <img
             :src="selectedCaseModal.image"
             :alt="selectedCaseModal.title"
             class="w-full h-full object-cover"
           />
           <div class="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 text-white text-xs font-mono">
-            <Flame class="w-3 h-3 text-[#FF7A00] fill-current" />
+            <Flame class="w-3 h-3 text-amber-500 fill-current" />
             <span>热度 {{ selectedCaseModal.heat }}</span>
           </div>
         </div>
@@ -677,59 +512,42 @@ const handleScrollToCases = () => {
             <span
               v-for="tag in selectedCaseModal.tags"
               :key="tag"
-              class="px-2 py-0.5 rounded text-xs font-serif"
-              :class="
-                isDark
-                  ? 'bg-[#221810] border border-[#473422] text-[#E8C88B]'
-                  : 'bg-[#F5E7DF] text-[#8B3A2B]'
-              "
+              class="tag-pill text-theme-accent"
             >
               {{ tag }}
             </span>
           </div>
-          <p class="text-xs font-serif leading-relaxed" :class="isDark ? 'text-[#C7B59D]' : 'text-[#5C4F44]'">
+          <p class="text-xs font-serif leading-relaxed text-theme-secondary">
             {{ selectedCaseModal.description }}
           </p>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-center gap-3 pt-3 border-t" :class="isDark ? 'border-[#2C2117]' : 'border-[#F0EAE1]'">
+        <div class="flex flex-col sm:flex-row items-center gap-3 pt-3 border-t border-theme-border">
           <button
             v-if="selectedCaseModal.isPlayable"
+            type="button"
             @click="handlePlayCaseDirect(selectedCaseModal)"
-            class="w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs shadow-lg cursor-pointer active:scale-95 transition-all"
-            :class="
-              isDark
-                ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07]'
-                : 'bg-[#8B3A2B] hover:bg-[#783023] text-white'
-            "
+            class="portal-modal-primary-btn"
           >
             <Play class="w-4 h-4 fill-current" />
             <span>立即开始现场调查</span>
           </button>
           <button
             v-else
+            type="button"
             @click="handleExploreCaseInStudio(selectedCaseModal)"
-            class="w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs cursor-pointer transition-all border"
-            :class="
-              isDark
-                ? 'bg-[#271C12] hover:bg-[#342618] text-[#E8C88B] border-[#5A4027]'
-                : 'bg-[#FAF7F2] hover:bg-[#F2ECE4] text-[#8B3A2B] border-[#E0D5C7]'
-            "
+            class="portal-modal-secondary-btn"
           >
-            <GitGraph class="w-4 h-4" />
+            <GitGraph class="w-4 h-4 text-theme-accent" />
             <span>在创作工坊中解析 / 完善</span>
           </button>
 
           <button
+            type="button"
             @click="sound.playHeartbeatTick(); selectedCaseModal = null; emit('openLobby');"
-            class="w-full sm:w-auto px-4 py-3 rounded-xl border text-xs font-serif cursor-pointer transition-colors flex items-center justify-center gap-1.5"
-            :class="
-              isDark
-                ? 'bg-[#1A140F] hover:bg-[#251D15] text-[#A89073] hover:text-[#E8C88B] border-[#3A2B1D]'
-                : 'bg-white hover:bg-[#FAF7F2] text-[#6E5F52] hover:text-[#1C1917] border-[#E0D5C7]'
-            "
+            class="portal-modal-aux-btn"
           >
-            <Users class="w-3.5 h-3.5" />
+            <Users class="w-3.5 h-3.5 text-theme-accent" />
             <span>联机大厅</span>
           </button>
         </div>
@@ -737,14 +555,7 @@ const handleScrollToCases = () => {
     </div>
 
     <!-- 6. FOOTER -->
-    <footer
-      class="mt-auto border-t py-6 px-6 sm:px-10 text-xs font-serif flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors duration-300"
-      :class="
-        isDark
-          ? 'bg-[#0A0807] border-[#221810] text-[#7A6652]'
-          : 'bg-[#FAF7F2] border-[#E8DFD5] text-[#8C7E72]'
-      "
-    >
+    <footer class="mt-auto border-t border-theme-border bg-theme-card-subtle py-6 px-6 sm:px-10 text-xs font-serif text-theme-muted flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors duration-300">
       <div class="flex items-center gap-3">
         <span>AI Detective · 智能探案平台</span>
         <span>•</span>
@@ -758,3 +569,74 @@ const handleScrollToCases = () => {
     </footer>
   </div>
 </template>
+
+<style scoped>
+@reference "../../index.css";
+
+.portal-hero-section {
+  @apply relative w-full h-135 sm:h-145 lg:h-155 overflow-hidden flex items-center;
+}
+
+.portal-hero-backdrop {
+  @apply absolute inset-0 pointer-events-none;
+}
+
+.portal-hero-img {
+  @apply absolute inset-0 w-full h-full object-cover object-center scale-105 transition-all duration-700 dark:brightness-95 dark:contrast-105 brightness-105 contrast-95 sepia-[0.2];
+}
+
+.portal-hero-mask {
+  @apply absolute inset-0 transition-colors duration-500;
+  background:
+    linear-gradient(to right, var(--bg-overlay, var(--bg-desk)) 0%, rgba(0, 0, 0, 0) 70%),
+    linear-gradient(to top, var(--bg-desk) 0%, rgba(0, 0, 0, 0) 50%);
+}
+
+.nav-icon-btn {
+  @apply p-2 rounded-full border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-muted hover:text-theme-accent transition cursor-pointer;
+}
+
+.portal-theme-switch-btn {
+  @apply px-3 py-1 rounded-full flex items-center gap-1.5 transition text-xs font-serif font-bold cursor-pointer text-theme-muted hover:text-theme-ink;
+}
+
+.portal-theme-switch-btn.is-active {
+  @apply bg-theme-accent text-white shadow-xs;
+}
+
+.portal-sim-btn {
+  @apply flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-red-500/30 bg-red-950/15 text-red-500 hover:bg-red-950/25 text-xs font-mono transition cursor-pointer active:scale-95 shadow-xs;
+}
+
+.portal-profile-btn {
+  @apply flex items-center gap-2 px-2 py-1 rounded-full border border-theme-border bg-theme-surface text-theme-ink hover:border-theme-accent transition cursor-pointer active:scale-95 shadow-xs;
+}
+
+.portal-modal-primary-btn {
+  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs bg-theme-accent hover:bg-theme-accent-hover text-white shadow-lg cursor-pointer active:scale-95 transition-all;
+}
+
+.portal-modal-secondary-btn {
+  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-accent cursor-pointer transition-all;
+}
+
+.portal-modal-aux-btn {
+  @apply w-full sm:w-auto px-4 py-3 rounded-xl border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-secondary hover:text-theme-ink text-xs font-serif cursor-pointer transition-colors flex items-center justify-center gap-1.5;
+}
+
+.feature-pillar-box {
+  @apply flex items-center gap-4 pt-3 sm:pt-0 sm:px-3;
+}
+
+.feature-pillar-icon {
+  @apply w-12 h-12 rounded-xl border border-theme-border bg-theme-card-subtle flex items-center justify-center shrink-0 text-theme-accent;
+}
+
+.case-card {
+  @apply relative rounded-2xl overflow-hidden border border-theme-border bg-theme-card hover:border-theme-accent/60 transition-all duration-300 shadow-xl flex flex-col justify-between cursor-pointer;
+}
+
+.tag-pill {
+  @apply px-2 py-0.5 rounded text-[10px] font-serif bg-theme-card-subtle border border-theme-border text-theme-muted;
+}
+</style>

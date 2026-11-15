@@ -45,7 +45,6 @@ const trialResult = ref<{
 
 // Tooltip state for custom SVG charts
 const hoveredBarIndex = ref<number | null>(null);
-const hoveredRadarSuspect = ref<string | null>(null);
 
 const profiles = computed(() =>
   calculateSuspectEvidenceProfiles(props.caseData.clues, props.caseData.suspects, props.caseData.trueCulpritId)
@@ -63,7 +62,7 @@ const rigorResult = computed(() =>
   evaluateInferenceRigor(props.caseData)
 );
 
-// Colors
+// SVG geometry color tokens
 const colors = computed(() => ({
   crucial: props.isDark ? '#EF4444' : '#DC2626',
   motive: props.isDark ? '#C084FC' : '#9333EA',
@@ -152,14 +151,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
 <template>
   <div class="space-y-6 animate-fadeIn pb-12">
     <!-- 1. TOP HEADER & RIGOR SCORE BANNER -->
-    <div
-      :class="[
-        'rounded-2xl p-6 border shadow-sm transition-colors',
-        isDark
-          ? 'bg-gradient-to-br from-[#1C150F] via-[#140F0B] to-[#0D0A08] border-[#3E2D1E]'
-          : 'bg-gradient-to-br from-[#FAF5EE] via-[#F5ECE1] to-[#EFE2D2] border-[#E2D2BF]'
-      ]"
-    >
+    <div class="verification-hero">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-2 max-w-2xl">
           <div class="flex items-center gap-3">
@@ -167,67 +159,46 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               :class="[
                 'px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase border flex items-center gap-1.5',
                 rigorResult.verdict === 'RATIONALLY_SEALED'
-                  ? isDark
-                    ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60'
-                    : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
                   : rigorResult.verdict === 'WARNING_AMBIGUITY'
-                  ? isDark
-                    ? 'bg-amber-950/60 text-amber-400 border-amber-800/60'
-                    : 'bg-amber-100 text-amber-800 border-amber-300'
-                  : isDark
-                  ? 'bg-rose-950/60 text-rose-400 border-rose-800/60'
-                  : 'bg-rose-100 text-rose-800 border-rose-300'
+                  ? 'bg-amber-500/15 text-amber-500 border-amber-500/30'
+                  : 'bg-rose-500/15 text-rose-500 border-rose-500/30'
               ]"
             >
               <Scale class="w-3.5 h-3.5" />
               <span>{{ rigorResult.verdictTitle }}</span>
             </span>
-            <span :class="['text-xs font-mono', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+            <span class="text-xs font-mono text-theme-muted">
               案卷编号: {{ caseData.id }}
             </span>
           </div>
 
-          <h2
-            :class="[
-              'text-xl sm:text-2xl font-serif font-black tracking-wide',
-              isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]'
-            ]"
-          >
+          <h2 class="text-xl sm:text-2xl font-serif font-black tracking-wide text-theme-ink">
             案卷逻辑校验与推理严密性审查
           </h2>
-          <p
-            :class="[
-              'text-xs sm:text-sm leading-relaxed',
-              isDark ? 'text-[#A89073]' : 'text-[#6E5F52]'
-            ]"
-          >
+          <p class="text-xs sm:text-sm leading-relaxed text-theme-muted">
             {{ rigorResult.verdictDescription }}
           </p>
         </div>
 
         <!-- Right Score Pill -->
         <div class="flex items-center gap-4 shrink-0">
-          <div
-            :class="[
-              'p-4 rounded-xl border text-center min-w-[130px] shadow-inner',
-              isDark ? 'bg-[#150F0B] border-[#38281A]' : 'bg-white border-[#E5DACD]'
-            ]"
-          >
-            <div :class="['text-[11px] font-mono uppercase tracking-wider', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+          <div class="verification-score-pill">
+            <div class="text-[11px] font-mono uppercase tracking-wider text-theme-muted">
               严密性评分
             </div>
             <div
               :class="[
                 'text-3xl font-serif font-black',
                 rigorResult.overallRigorScore >= 85
-                  ? isDark ? 'text-[#DFB36C]' : 'text-[#8B3A2B]'
-                  : isDark ? 'text-amber-400' : 'text-amber-600'
+                  ? 'text-theme-accent'
+                  : 'text-amber-500'
               ]"
             >
               {{ rigorResult.overallRigorScore }}
               <span class="text-xs font-sans font-normal opacity-60"> / 100</span>
             </div>
-            <div class="text-[10px] font-mono mt-0.5 opacity-80">
+            <div class="text-[10px] font-mono mt-0.5 text-theme-muted">
               {{ rigorResult.isUniqueClosure ? '排他性闭环达标' : '待强化分差' }}
             </div>
           </div>
@@ -236,12 +207,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
           <button
             v-if="caseData.validationReport && !caseData.validationReport.isValid"
             @click="emit('triggerSelfRepair')"
-            :class="[
-              'flex items-center gap-2 px-4 py-3 rounded-xl font-serif font-bold text-xs shadow-md transition cursor-pointer active:scale-95',
-              isDark
-                ? 'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950'
-                : 'bg-[#8B3A2B] hover:bg-[#783023] text-white'
-            ]"
+            class="verification-primary-btn"
           >
             <RotateCcw class="w-4 h-4" />
             <span>一键执行自愈修复</span>
@@ -250,28 +216,40 @@ const handleRunSimulatedTrial = (suspectId: string) => {
       </div>
 
       <!-- 4 Indicators Quick Bar -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-dashed border-[#8C765E]/20">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-dashed border-theme-border">
         <div class="flex flex-col">
-          <span class="text-[11px] opacity-70">定罪领先差 (Margin)</span>
+          <span class="text-[11px] text-theme-muted">定罪领先差 (Margin)</span>
           <span class="text-sm font-bold font-mono text-emerald-500">
             +{{ rigorResult.convictionMargin }}%
           </span>
         </div>
         <div class="flex flex-col">
-          <span class="text-[11px] opacity-70">核心物证覆盖率</span>
-          <span class="text-sm font-bold font-mono">
+          <span class="text-[11px] text-theme-muted">核心物证覆盖率</span>
+          <span class="text-sm font-bold font-mono text-theme-ink">
             {{ rigorResult.crucialClueExclusiveRatio }}%
           </span>
         </div>
         <div class="flex flex-col">
-          <span class="text-[11px] opacity-70">无辜者误判防线</span>
-          <span :class="['text-sm font-bold font-mono', rigorResult.innocentSafeguarded ? 'text-emerald-500' : 'text-amber-500']">
+          <span class="text-[11px] text-theme-muted">无辜者误判防线</span>
+          <span
+            class="text-sm font-bold font-mono"
+            :class="{
+              'text-emerald-500': rigorResult.innocentSafeguarded,
+              'text-amber-500': !rigorResult.innocentSafeguarded
+            }"
+          >
             {{ rigorResult.innocentSafeguarded ? '全员脱罪保护' : '存在误判风险' }}
           </span>
         </div>
         <div class="flex flex-col">
-          <span class="text-[11px] opacity-70">密室物理自洽度</span>
-          <span :class="['text-sm font-bold font-mono', (!caseData.validationReport || caseData.validationReport.isValid) ? 'text-emerald-500' : 'text-rose-500']">
+          <span class="text-[11px] text-theme-muted">密室物理自洽度</span>
+          <span
+            class="text-sm font-bold font-mono"
+            :class="{
+              'text-emerald-500': !caseData.validationReport || caseData.validationReport.isValid,
+              'text-rose-500': caseData.validationReport && !caseData.validationReport.isValid
+            }"
+          >
             {{ (!caseData.validationReport || caseData.validationReport.isValid) ? '100% 零冲突' : '有物理冲突' }}
           </span>
         </div>
@@ -279,56 +257,32 @@ const handleRunSimulatedTrial = (suspectId: string) => {
     </div>
 
     <!-- 2. SUB-NAVIGATION TABS -->
-    <div class="flex items-center justify-between border-b border-[#8C765E]/20 pb-2">
+    <div class="flex items-center justify-between border-b border-theme-border pb-2">
       <div class="flex items-center gap-2">
         <button
           @click="activeTab = 'OVERVIEW'; sound.playPaperRustle()"
-          :class="[
-            'px-4 py-2 rounded-xl text-xs font-serif font-bold transition cursor-pointer',
-            activeTab === 'OVERVIEW'
-              ? isDark
-                ? 'bg-[#241A12] text-[#E5C384] border border-[#4E3725]'
-                : 'bg-white text-[#8B3A2B] border border-[#E2D2BF] shadow-xs'
-              : isDark
-              ? 'text-[#A89073] hover:text-[#E5C384]'
-              : 'text-[#6E5F52] hover:text-[#8B3A2B]'
-          ]"
+          class="verification-tab-btn"
+          :class="{ 'is-active': activeTab === 'OVERVIEW' }"
         >
           证据强度与推理雷达
         </button>
         <button
           @click="activeTab = 'MATRIX'; sound.playPaperRustle()"
-          :class="[
-            'px-4 py-2 rounded-xl text-xs font-serif font-bold transition cursor-pointer',
-            activeTab === 'MATRIX'
-              ? isDark
-                ? 'bg-[#241A12] text-[#E5C384] border border-[#4E3725]'
-                : 'bg-white text-[#8B3A2B] border border-[#E2D2BF] shadow-xs'
-              : isDark
-              ? 'text-[#A89073] hover:text-[#E5C384]'
-              : 'text-[#6E5F52] hover:text-[#8B3A2B]'
-          ]"
+          class="verification-tab-btn"
+          :class="{ 'is-active': activeTab === 'MATRIX' }"
         >
           物证与涉案人关联矩阵
         </button>
         <button
           @click="activeTab = 'TRIAL'; sound.playPaperRustle()"
-          :class="[
-            'px-4 py-2 rounded-xl text-xs font-serif font-bold transition cursor-pointer',
-            activeTab === 'TRIAL'
-              ? isDark
-                ? 'bg-[#241A12] text-[#E5C384] border border-[#4E3725]'
-                : 'bg-white text-[#8B3A2B] border border-[#E2D2BF] shadow-xs'
-              : isDark
-              ? 'text-[#A89073] hover:text-[#E5C384]'
-              : 'text-[#6E5F52] hover:text-[#8B3A2B]'
-          ]"
+          class="verification-tab-btn"
+          :class="{ 'is-active': activeTab === 'TRIAL' }"
         >
           模拟法庭指控推演
         </button>
       </div>
 
-      <div class="text-xs font-mono text-[#8C765E]">
+      <div class="text-xs font-mono text-theme-muted">
         数据源: 确定性统计推理引擎
       </div>
     </div>
@@ -337,35 +291,25 @@ const handleRunSimulatedTrial = (suspectId: string) => {
     <div v-if="activeTab === 'OVERVIEW'" class="space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Chart A: Stacked Bar Chart -->
-        <div
-          :class="[
-            'lg:col-span-7 rounded-2xl p-5 border flex flex-col justify-between relative',
-            isDark ? 'bg-[#150F0B] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-          ]"
-        >
+        <div class="lg:col-span-7 verification-card">
           <div>
             <div class="flex items-center justify-between mb-2">
-              <h3
-                :class="[
-                  'font-serif font-bold text-sm tracking-wide flex items-center gap-2',
-                  isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]'
-                ]"
-              >
-                <Target :class="['w-4 h-4', isDark ? 'text-[#DFB36C]' : 'text-[#8B3A2B]']" />
+              <h3 class="font-serif font-bold text-sm tracking-wide flex items-center gap-2 text-theme-ink">
+                <Target class="w-4 h-4 text-theme-accent" />
                 <span>各嫌疑人证据关联强度分布 (Evidence Distribution)</span>
               </h3>
               <span class="text-[11px] font-mono text-emerald-500">
                 定罪门槛: 80分
               </span>
             </div>
-            <p :class="['text-xs mb-4', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+            <p class="text-xs mb-4 text-theme-muted">
               通过叠加计算决定性物证、深层动机、现场痕迹及不在场证据，检验真凶是否达成唯一定罪闭环。
             </p>
           </div>
 
           <!-- SVG Bar Chart -->
-          <div class="w-full h-[320px] relative flex flex-col justify-end">
-            <svg class="w-full h-[270px]" viewBox="0 0 500 240" preserveAspectRatio="none">
+          <div class="w-full h-80 relative flex flex-col justify-end">
+            <svg class="w-full h-67.5" viewBox="0 0 500 240" preserveAspectRatio="none">
               <!-- Grid lines & Y Axis -->
               <g v-for="tick in [0, 20, 40, 60, 80, 100]" :key="tick">
                 <line
@@ -394,7 +338,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 :y1="210 - (80 / 100) * 190"
                 :x2="480"
                 :y2="210 - (80 / 100) * 190"
-                :stroke="isDark ? '#E5C384' : '#8B3A2B'"
+                :stroke="colors.gold"
                 stroke-dasharray="4 4"
                 stroke-width="1.5"
               />
@@ -402,7 +346,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 :x="475"
                 :y="205 - (80 / 100) * 190"
                 text-anchor="end"
-                :fill="isDark ? '#E5C384' : '#8B3A2B'"
+                :fill="colors.gold"
                 font-size="9"
                 font-family="sans-serif"
                 font-weight="bold"
@@ -418,56 +362,51 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 @mouseleave="hoveredBarIndex = null"
                 class="cursor-pointer"
               >
-                <!-- Calculate heights -->
-                <template v-if="true">
-                  <!-- Bar stack group -->
-                  <!-- x = 70 + idx * 105, width = 36 -->
-                  <!-- Total Inculpation Stack -->
-                  <rect
-                    :x="75 + idx * 100"
-                    :y="210 - ((p.crucialEvidenceWeight + p.motiveEvidenceWeight + p.circumstantialWeight) / 100) * 190"
-                    width="32"
-                    :height="(p.crucialEvidenceWeight / 100) * 190"
-                    :fill="colors.crucial"
-                    rx="2"
-                  />
-                  <rect
-                    :x="75 + idx * 100"
-                    :y="210 - ((p.motiveEvidenceWeight + p.circumstantialWeight) / 100) * 190"
-                    width="32"
-                    :height="(p.motiveEvidenceWeight / 100) * 190"
-                    :fill="colors.motive"
-                  />
-                  <rect
-                    :x="75 + idx * 100"
-                    :y="210 - (p.circumstantialWeight / 100) * 190"
-                    width="32"
-                    :height="(p.circumstantialWeight / 100) * 190"
-                    :fill="colors.circumstantial"
-                  />
-                  <!-- Exculpatory Bar (Green side-bar) -->
-                  <rect
-                    :x="110 + idx * 100"
-                    :y="210 - (p.exculpatoryWeight / 100) * 190"
-                    width="14"
-                    :height="(p.exculpatoryWeight / 100) * 190"
-                    :fill="colors.exculpatory"
-                    rx="3"
-                  />
+                <!-- Total Inculpation Stack -->
+                <rect
+                  :x="75 + idx * 100"
+                  :y="210 - ((p.crucialEvidenceWeight + p.motiveEvidenceWeight + p.circumstantialWeight) / 100) * 190"
+                  width="32"
+                  :height="(p.crucialEvidenceWeight / 100) * 190"
+                  :fill="colors.crucial"
+                  rx="2"
+                />
+                <rect
+                  :x="75 + idx * 100"
+                  :y="210 - ((p.motiveEvidenceWeight + p.circumstantialWeight) / 100) * 190"
+                  width="32"
+                  :height="(p.motiveEvidenceWeight / 100) * 190"
+                  :fill="colors.motive"
+                />
+                <rect
+                  :x="75 + idx * 100"
+                  :y="210 - (p.circumstantialWeight / 100) * 190"
+                  width="32"
+                  :height="(p.circumstantialWeight / 100) * 190"
+                  :fill="colors.circumstantial"
+                />
+                <!-- Exculpatory Bar (Green side-bar) -->
+                <rect
+                  :x="110 + idx * 100"
+                  :y="210 - (p.exculpatoryWeight / 100) * 190"
+                  width="14"
+                  :height="(p.exculpatoryWeight / 100) * 190"
+                  :fill="colors.exculpatory"
+                  rx="3"
+                />
 
-                  <!-- X label -->
-                  <text
-                    :x="98 + idx * 100"
-                    :y="230"
-                    text-anchor="middle"
-                    :fill="colors.text"
-                    font-size="11"
-                    font-family="serif"
-                    font-weight="bold"
-                  >
-                    {{ p.name }}
-                  </text>
-                </template>
+                <!-- X label -->
+                <text
+                  :x="98 + idx * 100"
+                  :y="230"
+                  text-anchor="middle"
+                  :fill="colors.text"
+                  font-size="11"
+                  font-family="serif"
+                  font-weight="bold"
+                >
+                  {{ p.name }}
+                </text>
               </g>
             </svg>
 
@@ -478,10 +417,9 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               :style="{
                 backgroundColor: colors.tooltipBg,
                 borderColor: colors.tooltipBorder,
-                color: isDark ? '#F3EFEA' : '#2C241E',
               }"
             >
-              <div class="font-bold font-serif flex items-center justify-between gap-4">
+              <div class="font-bold font-serif flex items-center justify-between gap-4 text-theme-ink">
                 <span>{{ profiles[hoveredBarIndex].name }} ({{ profiles[hoveredBarIndex].title }})</span>
                 <span
                   v-if="profiles[hoveredBarIndex].isTrueCulprit"
@@ -493,7 +431,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               <div class="text-[11px] font-mono text-emerald-500">
                 综合定罪判定: {{ profiles[hoveredBarIndex].totalInculpationScore }}分 · {{ profiles[hoveredBarIndex].statusLabel }}
               </div>
-              <div class="border-t border-[#8C765E]/20 pt-1 space-y-0.5">
+              <div class="border-t border-theme-border pt-1 space-y-0.5 text-theme-secondary">
                 <div class="flex items-center justify-between gap-4">
                   <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" :style="{ backgroundColor: colors.crucial }"></span>核心致命铁证:</span>
                   <span class="font-mono font-bold">{{ profiles[hoveredBarIndex].crucialEvidenceWeight }}%</span>
@@ -514,7 +452,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
             </div>
 
             <!-- Legend -->
-            <div class="flex flex-wrap items-center justify-center gap-4 text-[11px] pt-2">
+            <div class="flex flex-wrap items-center justify-center gap-4 text-[11px] pt-2 text-theme-muted">
               <span class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-xs" :style="{ backgroundColor: colors.crucial }"></span>
                 <span>核心致命铁证</span>
@@ -536,30 +474,20 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         </div>
 
         <!-- Chart B: Radar Chart (五维推理判定雷达图) -->
-        <div
-          :class="[
-            'lg:col-span-5 rounded-2xl p-5 border flex flex-col justify-between relative',
-            isDark ? 'bg-[#150F0B] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-          ]"
-        >
+        <div class="lg:col-span-5 verification-card">
           <div>
-            <h3
-              :class="[
-                'font-serif font-bold text-sm tracking-wide flex items-center gap-2 mb-1',
-                isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]'
-              ]"
-            >
-              <Scale :class="['w-4 h-4', isDark ? 'text-[#DFB36C]' : 'text-[#8B3A2B]']" />
+            <h3 class="font-serif font-bold text-sm tracking-wide flex items-center gap-2 mb-1 text-theme-ink">
+              <Scale class="w-4 h-4 text-theme-accent" />
               <span>五维推理闭环雷达 (Inference Dimensions)</span>
             </h3>
-            <p :class="['text-xs mb-3', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+            <p class="text-xs mb-3 text-theme-muted">
               对比真凶与主要嫌疑人在物证、动机、时空窗口及诡计可行度上的分化。
             </p>
           </div>
 
           <!-- SVG Radar -->
-          <div class="w-full h-[320px] flex flex-col items-center justify-center">
-            <svg class="w-[280px] h-[260px]" viewBox="0 0 300 300">
+          <div class="w-full h-80 flex flex-col items-center justify-center">
+            <svg class="w-70 h-65" viewBox="0 0 300 300">
               <!-- Concentric Pentagons -->
               <polygon
                 v-for="level in [1, 2, 3, 4, 5]"
@@ -621,17 +549,17 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               <polygon
                 v-if="caseData.suspects[0]"
                 :points="getSuspectPolygon(caseData.suspects[0].name)"
-                :fill="isDark ? '#DFB36C' : '#8B3A2B'"
+                :fill="colors.gold"
                 fill-opacity="0.45"
-                :stroke="isDark ? '#DFB36C' : '#8B3A2B'"
+                :stroke="colors.gold"
                 stroke-width="2"
               />
             </svg>
 
             <!-- Radar Legend -->
-            <div class="flex items-center justify-center gap-4 text-[11px] pt-1">
+            <div class="flex items-center justify-center gap-4 text-[11px] pt-1 text-theme-muted">
               <span class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: isDark ? '#DFB36C' : '#8B3A2B' }"></span>
+                <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: colors.gold }"></span>
                 <span>许宁 (真凶)</span>
               </span>
               <span class="flex items-center gap-1.5">
@@ -652,21 +580,18 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <div
           v-for="cp in rigorResult.checkpoints"
           :key="cp.id"
-          :class="[
-            'p-4 rounded-xl border flex items-start justify-between gap-4 transition-colors',
-            isDark ? 'bg-[#150F0B] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-          ]"
+          class="verification-card flex-row items-start justify-between gap-4"
         >
           <div class="space-y-1">
             <div class="flex items-center gap-2">
               <CheckCircle2 v-if="cp.status === 'PASS'" class="w-4 h-4 text-emerald-500 shrink-0" />
               <AlertTriangle v-else-if="cp.status === 'WARN'" class="w-4 h-4 text-amber-500 shrink-0" />
               <XCircle v-else class="w-4 h-4 text-rose-500 shrink-0" />
-              <h4 :class="['text-xs font-serif font-bold', isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]']">
+              <h4 class="text-xs font-serif font-bold text-theme-ink">
                 {{ cp.label }}
               </h4>
             </div>
-            <p :class="['text-[11px] leading-relaxed', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+            <p class="text-[11px] leading-relaxed text-theme-muted">
               {{ cp.description }}
             </p>
           </div>
@@ -687,18 +612,13 @@ const handleRunSimulatedTrial = (suspectId: string) => {
       </div>
 
       <!-- Actionable Rigor Improvement Tips -->
-      <div
-        :class="[
-          'p-4 rounded-xl border flex items-start gap-3',
-          isDark ? 'bg-[#1C140D] border-[#3E2D1E]' : 'bg-[#FAF4ED] border-[#E8DACB]'
-        ]"
-      >
-        <Sparkles :class="['w-4 h-4 shrink-0 mt-0.5', isDark ? 'text-[#DFB36C]' : 'text-[#8B3A2B]']" />
+      <div class="verification-advice-card">
+        <Sparkles class="w-4 h-4 shrink-0 mt-0.5 text-theme-accent" />
         <div class="space-y-1">
-          <h5 :class="['text-xs font-serif font-bold', isDark ? 'text-[#E5C384]' : 'text-[#8B3A2B]']">
+          <h5 class="text-xs font-serif font-bold text-theme-accent">
             推理严密性工程建议 (AI Engineering Suggestions)
           </h5>
-          <ul class="text-xs space-y-1 opacity-80 list-disc list-inside">
+          <ul class="text-xs space-y-1 text-theme-secondary list-disc list-inside">
             <li v-for="(advice, idx) in rigorResult.actionableAdvices" :key="idx">
               {{ advice }}
             </li>
@@ -709,16 +629,11 @@ const handleRunSimulatedTrial = (suspectId: string) => {
 
     <!-- 4. TAB 2: CORRELATION MATRIX GRID -->
     <div v-if="activeTab === 'MATRIX'" class="space-y-4">
-      <div
-        :class="[
-          'p-4 rounded-xl border',
-          isDark ? 'bg-[#150F0B] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-        ]"
-      >
-        <h3 :class="['font-serif font-bold text-sm mb-1', isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]']">
+      <div class="verification-card">
+        <h3 class="font-serif font-bold text-sm mb-1 text-theme-ink">
           物证与嫌疑人全息关联矩阵 (Correlation Matrix)
         </h3>
-        <p :class="['text-xs mb-4', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+        <p class="text-xs mb-4 text-theme-muted">
           点击任一交叉单元格，查看该证物在定罪链中对该嫌疑人的指向属性（直接凶器、动机书面、时间锁闭、嫁祸伪造或无接触）。
         </p>
 
@@ -726,29 +641,30 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
-              <tr :class="['border-b', isDark ? 'border-[#2C2117]' : 'border-[#E8DFD5]']">
+              <tr class="border-b border-theme-border text-theme-ink">
                 <th class="p-2.5 font-serif font-bold">证物名称 / 属性</th>
                 <th class="p-2.5 font-serif font-bold">类别</th>
                 <th
                   v-for="s in caseData.suspects"
                   :key="s.id"
-                  :class="['p-2.5 font-serif font-bold text-center', s.id === caseData.trueCulpritId ? 'text-amber-500' : '']"
+                  class="p-2.5 font-serif font-bold text-center"
+                  :class="{ 'text-theme-accent': s.id === caseData.trueCulpritId }"
                 >
                   {{ s.name }} {{ s.id === caseData.trueCulpritId ? '(真凶)' : '' }}
                 </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#8C765E]/10">
+            <tbody class="divide-y divide-theme-border">
               <tr
                 v-for="clue in caseData.clues"
                 :key="clue.id"
-                class="hover:bg-[#8C765E]/5 transition-colors"
+                class="hover:bg-theme-card-subtle transition-colors"
               >
-                <td class="p-2.5 font-serif font-medium flex items-center gap-2">
+                <td class="p-2.5 font-serif font-medium flex items-center gap-2 text-theme-ink">
                   <span v-if="clue.isCrucial" class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" title="核心关键物证" />
                   <span>{{ clue.name }}</span>
                 </td>
-                <td class="p-2.5 opacity-70 font-mono text-[11px]">
+                <td class="p-2.5 text-theme-muted font-mono text-[11px]">
                   {{ clue.category }}
                 </td>
                 <template v-for="suspect in caseData.suspects" :key="suspect.id">
@@ -760,7 +676,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                     "
                     :class="[
                       'p-2.5 text-center cursor-pointer transition',
-                      selectedCell?.clueId === clue.id && selectedCell?.suspectId === suspect.id ? 'ring-2 ring-amber-500 rounded' : ''
+                      selectedCell?.clueId === clue.id && selectedCell?.suspectId === suspect.id ? 'ring-2 ring-theme-accent rounded' : ''
                     ]"
                   >
                     <span
@@ -782,7 +698,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                       {{ correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.strength }}%
                     </span>
                   </td>
-                  <td v-else class="p-2.5 text-center">-</td>
+                  <td v-else class="p-2.5 text-center text-theme-muted">-</td>
                 </template>
               </tr>
             </tbody>
@@ -792,14 +708,11 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <!-- Selected Cell Detail Card -->
         <div
           v-if="selectedCell"
-          :class="[
-            'mt-4 p-4 rounded-xl border animate-fadeIn flex items-start justify-between gap-4',
-            isDark ? 'bg-[#1D1610] border-[#3E2D1E]' : 'bg-[#FAF6F0] border-[#E2D2BF]'
-          ]"
+          class="mt-4 p-4 rounded-xl border border-theme-border bg-theme-card-subtle animate-fadeIn flex items-start justify-between gap-4"
         >
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <span class="font-serif font-bold text-sm">
+              <span class="font-serif font-bold text-sm text-theme-ink">
                 {{ selectedCell.clueName }} ↔ {{ selectedCell.suspectName }}
               </span>
               <span
@@ -809,20 +722,20 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                     ? 'bg-red-500/20 text-red-400'
                     : selectedCell.linkType === 'TIMING_KEY'
                     ? 'bg-amber-500/20 text-amber-400'
-                    : 'bg-[#8C765E]/20'
+                    : 'bg-theme-surface text-theme-muted border border-theme-border'
                 ]"
               >
                 {{ selectedCell.linkType }} ({{ selectedCell.strength }}%)
               </span>
             </div>
-            <p class="text-xs leading-relaxed opacity-85">
+            <p class="text-xs leading-relaxed text-theme-secondary">
               {{ selectedCell.linkDescription }}
             </p>
           </div>
 
           <button
             @click="selectedCell = null"
-            class="text-xs opacity-60 hover:opacity-100 cursor-pointer"
+            class="text-xs text-theme-muted hover:text-theme-ink cursor-pointer"
           >
             关闭详情
           </button>
@@ -832,23 +745,13 @@ const handleRunSimulatedTrial = (suspectId: string) => {
 
     <!-- 5. TAB 3: SIMULATED TRIAL -->
     <div v-if="activeTab === 'TRIAL'" class="space-y-6">
-      <div
-        :class="[
-          'p-6 rounded-2xl border',
-          isDark ? 'bg-[#150F0B] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-        ]"
-      >
+      <div class="verification-card">
         <div class="max-w-2xl mb-6">
-          <h3
-            :class="[
-              'font-serif font-bold text-base mb-1 flex items-center gap-2',
-              isDark ? 'text-[#F3EFEA]' : 'text-[#2C241E]'
-            ]"
-          >
-            <Scale :class="['w-5 h-5', isDark ? 'text-[#DFB36C]' : 'text-[#8B3A2B]']" />
+          <h3 class="font-serif font-bold text-base mb-1 flex items-center gap-2 text-theme-ink">
+            <Scale class="w-5 h-5 text-theme-accent" />
             <span>法庭级定罪排他推演器 (Simulated Court Inculpation)</span>
           </h3>
-          <p :class="['text-xs leading-relaxed', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+          <p class="text-xs leading-relaxed text-theme-muted">
             验证案件能否经受住法庭级严密审理：选择任一嫌疑人提起公诉，系统将根据目前生成的物证链、不在场证据和物理闭环状态，裁决罪名是否成立。
           </p>
         </div>
@@ -863,24 +766,19 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               trialSuspectId = suspect.id;
               trialResult = null;
             "
-            :class="[
-              'p-3.5 rounded-xl border cursor-pointer transition',
-              trialSuspectId === suspect.id
-                ? isDark
-                  ? 'bg-[#261B12] border-[#DFB36C] ring-1 ring-[#DFB36C]'
-                  : 'bg-[#F9ECE3] border-[#8B3A2B] ring-1 ring-[#8B3A2B]'
-                : isDark
-                ? 'bg-[#18110C] border-[#2A1E14] hover:bg-[#22170F]'
-                : 'bg-[#FAF7F2] border-[#E8DFD5] hover:bg-[#F2ECE3]'
-            ]"
+            class="verification-suspect-chip"
+            :class="{ 'is-selected': trialSuspectId === suspect.id }"
           >
             <div class="flex items-center justify-between mb-1.5">
-              <span class="font-serif font-bold text-xs">{{ suspect.name }}</span>
-              <span class="text-[10px] font-mono opacity-60">{{ suspect.title }}</span>
+              <span class="font-serif font-bold text-xs text-theme-ink">{{ suspect.name }}</span>
+              <span class="text-[10px] font-mono text-theme-muted">{{ suspect.title }}</span>
             </div>
-            <div class="flex items-center justify-between text-[11px] font-mono">
+            <div class="flex items-center justify-between text-[11px] font-mono text-theme-secondary">
               <span>物证指向度:</span>
-              <span :class="['font-bold', suspect.id === caseData.trueCulpritId ? 'text-amber-500' : '']">
+              <span
+                class="font-bold"
+                :class="{ 'text-theme-accent': suspect.id === caseData.trueCulpritId }"
+              >
                 {{ profiles.find((p) => p.suspectId === suspect.id)?.totalInculpationScore }}%
               </span>
             </div>
@@ -891,12 +789,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <div class="flex items-center gap-3">
           <button
             @click="handleRunSimulatedTrial(trialSuspectId)"
-            :class="[
-              'flex items-center gap-2 px-6 py-2.5 rounded-xl font-serif font-bold text-xs shadow-md transition cursor-pointer active:scale-95',
-              isDark
-                ? 'bg-gradient-to-r from-[#DFB36C] to-[#C9942D] text-[#140E07]'
-                : 'bg-[#8B3A2B] text-white hover:bg-[#783023]'
-            ]"
+            class="verification-primary-btn"
           >
             <Scale class="w-4 h-4" />
             <span>对选中嫌疑人提起定罪指控</span>
@@ -909,12 +802,8 @@ const handleRunSimulatedTrial = (suspectId: string) => {
           :class="[
             'mt-6 p-5 rounded-2xl border animate-fadeIn space-y-3',
             trialResult.verdict === 'CONVICTED'
-              ? isDark
-                ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-200'
-                : 'bg-emerald-50 border-emerald-300 text-emerald-950'
-              : isDark
-              ? 'bg-amber-950/30 border-amber-800/60 text-amber-200'
-              : 'bg-amber-50 border-amber-300 text-amber-950'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-theme-ink'
+              : 'bg-amber-500/10 border-amber-500/30 text-theme-ink'
           ]"
         >
           <div class="flex items-center gap-2">
@@ -925,16 +814,16 @@ const handleRunSimulatedTrial = (suspectId: string) => {
             </h4>
           </div>
 
-          <p class="text-xs leading-relaxed opacity-90">
+          <p class="text-xs leading-relaxed text-theme-secondary">
             {{ trialResult.reason }}
           </p>
 
-          <div class="pt-2 border-t border-current/15 flex flex-wrap items-center gap-2">
-            <span class="text-[11px] font-mono opacity-80">关联呈堂证物:</span>
+          <div class="pt-2 border-t border-theme-border flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-mono text-theme-muted">关联呈堂证物:</span>
             <span
               v-for="(clueName, idx) in trialResult.supportingClues"
               :key="idx"
-              class="px-2 py-0.5 rounded text-[10px] font-serif bg-current/10 border border-current/20"
+              class="px-2 py-0.5 rounded text-[10px] font-serif bg-theme-surface border border-theme-border text-theme-ink"
             >
               {{ clueName }}
             </span>
@@ -944,3 +833,43 @@ const handleRunSimulatedTrial = (suspectId: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+@reference "../../index.css";
+
+.verification-hero {
+  @apply rounded-2xl p-6 border border-theme-border bg-theme-card shadow-sm transition-colors;
+}
+
+.verification-score-pill {
+  @apply p-4 rounded-xl border border-theme-border bg-theme-card-subtle text-center min-w-32.5 shadow-inner;
+}
+
+.verification-primary-btn {
+  @apply flex items-center gap-2 px-4 py-2.5 rounded-xl font-serif font-bold text-xs shadow-md transition cursor-pointer active:scale-95 bg-theme-accent hover:opacity-90 text-white;
+}
+
+.verification-tab-btn {
+  @apply px-4 py-2 rounded-xl text-xs font-serif font-bold transition cursor-pointer text-theme-muted hover:text-theme-ink border border-transparent;
+}
+
+.verification-tab-btn.is-active {
+  @apply bg-theme-surface text-theme-accent border-theme-border shadow-xs;
+}
+
+.verification-card {
+  @apply rounded-2xl p-5 border border-theme-border bg-theme-card relative shadow-xs;
+}
+
+.verification-advice-card {
+  @apply p-4 rounded-xl border border-theme-border bg-theme-card-subtle flex items-start gap-3;
+}
+
+.verification-suspect-chip {
+  @apply p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle cursor-pointer transition hover:border-theme-border-strong;
+}
+
+.verification-suspect-chip.is-selected {
+  @apply bg-theme-surface border-theme-accent ring-1 ring-theme-accent;
+}
+</style>

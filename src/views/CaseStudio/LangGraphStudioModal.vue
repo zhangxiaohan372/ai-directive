@@ -6,7 +6,6 @@ import {
   createInitialPipelineSnapshot,
   executeLangGraphStep,
   buildNPCKnowledgeAndBoundaries,
-  type NPCBoundaryArtifact,
 } from '../../core/studio';
 import { sound } from '../../utils/audio';
 import {
@@ -49,8 +48,6 @@ const emit = defineEmits<{
   (e: 'applyCase', caseData: StudioCaseData): void;
   (e: 'directPlay', caseData: StudioCaseData): void;
 }>();
-
-const isDark = computed(() => props.themeMode === 'dark');
 
 const PRESET_SCRIPTS = [
   {
@@ -331,107 +328,70 @@ const pipelineNodes = [
     icon: Play,
   },
 ];
+
+const getNodeStatusBadgeClass = (status: string) => {
+  if (status === 'COMPLETED') return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+  if (status === 'FAILED') return 'bg-red-500/20 text-red-400 border border-red-500/30';
+  if (status === 'REPAIRING') return 'bg-amber-500/20 text-amber-400 animate-spin';
+  return 'bg-theme-surface text-theme-muted border border-theme-border';
+};
+
+const getNodeStatusPillClass = (status: string) => {
+  if (status === 'COMPLETED') return 'bg-emerald-500/15 text-emerald-500';
+  if (status === 'RUNNING' || status === 'REPAIRING') return 'bg-amber-500/15 text-amber-500 animate-pulse';
+  if (status === 'FAILED') return 'bg-red-500/15 text-red-500';
+  return 'opacity-40';
+};
 </script>
 
 <template>
-  <div
-    v-if="isOpen"
-    :class="[
-      'fixed inset-0 z-50 backdrop-blur-md flex items-center justify-center p-2 sm:p-5 select-none animate-fadeIn font-serif transition-colors duration-300',
-      isDark ? 'bg-black/85' : 'bg-stone-900/55'
-    ]"
-  >
+  <div v-if="isOpen" class="langgraph-modal-overlay">
     <!-- Outer Modal Container -->
-    <div
-      :class="[
-        'relative w-full max-w-7xl h-[94vh] max-h-[920px] rounded-2xl border flex flex-col overflow-hidden shadow-2xl transition-all duration-300',
-        isDark
-          ? 'bg-[#120F0D] border-[#2C2117] text-[#E5DCD0]'
-          : 'bg-[#FAF7F2] border-[#E2D8CA] text-[#1C1917]'
-      ]"
-    >
+    <div class="langgraph-modal-window">
       <!-- Top Header Bar -->
-      <div
-        :class="[
-          'px-5 py-3 border-b flex items-center justify-between shrink-0 transition-colors',
-          isDark ? 'bg-[#18130E] border-[#2C2117]' : 'bg-[#F2EBE1] border-[#DFD5C6]'
-        ]"
-      >
+      <header class="langgraph-header">
         <!-- Brand & Workflow Title -->
         <div class="flex items-center gap-3">
-          <div
-            :class="[
-              'w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-xs',
-              isDark ? 'bg-[#C9942D] text-[#140E07]' : 'bg-[#8B3A2B] text-white'
-            ]"
-          >
+          <div class="langgraph-brand-badge">
             <Layers class="w-4 h-4" />
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h2 class="font-bold text-sm tracking-wide">
+              <h2 class="font-bold text-sm tracking-wide text-theme-ink">
                 LangGraph 案件生成工作流引擎 (Agentic Pipeline)
               </h2>
-              <span
-                :class="[
-                  'text-[10px] px-2 py-0.5 rounded-full font-mono font-bold',
-                  isDark ? 'bg-[#291F16] text-[#E5C384] border border-[#4D3723]' : 'bg-[#EAE1D5] text-[#8B3A2B] border border-[#D5CAA8]'
-                ]"
-              >
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-theme-surface text-theme-accent border border-theme-border">
                 StateGraph: 8 Nodes · Directed Cyclic Graph
               </span>
             </div>
-            <p :class="['text-[11px] font-sans', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+            <p class="text-[11px] font-sans text-theme-muted">
               从长文本剧本到确定性闭环探案游戏：有状态拓扑、硬规则校验与自愈重规划回环
             </p>
           </div>
         </div>
 
         <!-- Center Tabs: Graph Topology / Artifacts / Terminal -->
-        <div
-          :class="[
-            'flex items-center p-1 rounded-xl border text-xs font-sans font-medium',
-            isDark ? 'bg-[#100D0A] border-[#291F16]' : 'bg-white border-[#E0D5C7]'
-          ]"
-        >
+        <div class="langgraph-tab-group">
           <button
             @click="activeTab = 'GRAPH'"
-            :class="[
-              'flex items-center gap-1.5 px-3 py-1 rounded-lg transition cursor-pointer',
-              activeTab === 'GRAPH'
-                ? isDark
-                  ? 'bg-[#241A12] text-[#E5C384] font-bold shadow-xs'
-                  : 'bg-[#8B3A2B] text-white font-bold shadow-xs'
-                : isDark ? 'text-[#A89073] hover:text-[#F3EFEA]' : 'text-[#6E5F52] hover:text-[#1C1917]'
-            ]"
+            class="langgraph-tab-btn"
+            :class="{ 'is-active': activeTab === 'GRAPH' }"
           >
             <Activity class="w-3.5 h-3.5" />
             <span>全景拓扑图</span>
           </button>
           <button
             @click="activeTab = 'ARTIFACT'"
-            :class="[
-              'flex items-center gap-1.5 px-3 py-1 rounded-lg transition cursor-pointer',
-              activeTab === 'ARTIFACT'
-                ? isDark
-                  ? 'bg-[#241A12] text-[#E5C384] font-bold shadow-xs'
-                  : 'bg-[#8B3A2B] text-white font-bold shadow-xs'
-                : isDark ? 'text-[#A89073] hover:text-[#F3EFEA]' : 'text-[#6E5F52] hover:text-[#1C1917]'
-            ]"
+            class="langgraph-tab-btn"
+            :class="{ 'is-active': activeTab === 'ARTIFACT' }"
           >
             <Eye class="w-3.5 h-3.5" />
             <span>中间产物监视器</span>
           </button>
           <button
             @click="activeTab = 'TERMINAL'"
-            :class="[
-              'flex items-center gap-1.5 px-3 py-1 rounded-lg transition cursor-pointer',
-              activeTab === 'TERMINAL'
-                ? isDark
-                  ? 'bg-[#241A12] text-[#E5C384] font-bold shadow-xs'
-                  : 'bg-[#8B3A2B] text-white font-bold shadow-xs'
-                : isDark ? 'text-[#A89073] hover:text-[#F3EFEA]' : 'text-[#6E5F52] hover:text-[#1C1917]'
-            ]"
+            class="langgraph-tab-btn"
+            :class="{ 'is-active': activeTab === 'TERMINAL' }"
           >
             <Terminal class="w-3.5 h-3.5" />
             <span>执行流式终端 ({{ pipelineState.logs.length }})</span>
@@ -441,23 +401,15 @@ const pipelineNodes = [
         <!-- Right Action: Close -->
         <button
           @click="emit('close')"
-          :class="[
-            'p-1.5 rounded-lg transition cursor-pointer',
-            isDark ? 'text-[#A89073] hover:text-white hover:bg-[#221811]' : 'text-[#8C7E72] hover:text-[#1C1917] hover:bg-[#EAE1D5]'
-          ]"
+          class="langgraph-icon-btn"
           title="关闭窗口"
         >
           <X class="w-5 h-5" />
         </button>
-      </div>
+      </header>
 
       <!-- 2. SCRIPT INGESTION STRIP -->
-      <div
-        :class="[
-          'px-5 py-2.5 border-b flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-sans shrink-0',
-          isDark ? 'bg-[#15110E] border-[#241B13]' : 'bg-[#FAF7F2] border-[#E8DFD5]'
-        ]"
-      >
+      <div class="langgraph-strip">
         <!-- File Picker & Active Script -->
         <div class="flex items-center flex-wrap gap-2.5">
           <input
@@ -469,18 +421,13 @@ const pipelineNodes = [
           />
           <button
             @click="fileInputRef?.click()"
-            :class="[
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-medium transition cursor-pointer',
-              isDark
-                ? 'bg-[#1E1712] hover:bg-[#2A2019] text-[#E5C384] border-[#3E2D1E]'
-                : 'bg-white hover:bg-[#F2ECE4] text-[#8B3A2B] border-[#D8CFC2]'
-            ]"
+            class="langgraph-btn-secondary"
           >
             <Upload class="w-3.5 h-3.5" />
             <span>上传本地剧本 (PDF/Word/MD)</span>
           </button>
 
-          <span :class="['text-[11px]', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+          <span class="text-[11px] text-theme-muted">
             或快捷载入精品范例：
           </span>
 
@@ -488,22 +435,14 @@ const pipelineNodes = [
             v-for="ps in PRESET_SCRIPTS"
             :key="ps.id"
             @click="handleSelectPreset(ps)"
-            :class="[
-              'px-2.5 py-1 rounded-lg border text-[11px] transition cursor-pointer font-serif',
-              pipelineState.inputScript.fileName === ps.filename
-                ? isDark
-                  ? 'bg-[#291F16] text-[#E5C384] border-[#C9942D] font-bold shadow-xs'
-                  : 'bg-[#F5E7DF] text-[#8B3A2B] border-[#8B3A2B] font-bold shadow-xs'
-                : isDark
-                ? 'bg-[#18130E] text-[#A89073] border-[#2C2117] hover:border-[#4D3723]'
-                : 'bg-white text-[#5C4F44] border-[#E0D5C7] hover:bg-[#FAF7F2]'
-            ]"
+            class="langgraph-preset-chip"
+            :class="{ 'is-active': pipelineState.inputScript.fileName === ps.filename }"
             :title="ps.description"
           >
             <span>{{ ps.title }}</span>
             <span
               :class="[
-                'ml-1 text-[9px] px-1 py-0.2 rounded',
+                'ml-1 text-[9px] px-1 py-0.5 rounded',
                 ps.id === 'snow_manor' ? 'bg-amber-500/20 text-amber-500 font-bold' : 'opacity-60'
               ]"
             >
@@ -516,12 +455,7 @@ const pipelineNodes = [
         <div class="flex items-center gap-2 shrink-0">
           <button
             @click="handleResetPipeline"
-            :class="[
-              'p-1.5 rounded-lg border transition cursor-pointer',
-              isDark
-                ? 'border-[#3E2D1E] text-[#A89073] hover:text-[#F3EFEA] hover:bg-[#201811]'
-                : 'border-[#E0D5C7] text-[#6E5F52] hover:bg-[#F2ECE4]'
-            ]"
+            class="langgraph-icon-btn"
             title="重置状态机为初始就绪"
           >
             <RotateCcw class="w-4 h-4" />
@@ -530,12 +464,7 @@ const pipelineNodes = [
           <button
             @click="handleRunSingleStep()"
             :disabled="isRunningAll || pipelineState.currentStep === 'PUBLISHED'"
-            :class="[
-              'px-3 py-1.5 rounded-lg border text-xs font-bold transition flex items-center gap-1.5 cursor-pointer disabled:opacity-40',
-              isDark
-                ? 'border-[#4D3723] bg-[#221811] hover:bg-[#2C1F16] text-[#E5C384]'
-                : 'border-[#D0C2B0] bg-white hover:bg-[#F2ECE4] text-[#8B3A2B]'
-            ]"
+            class="langgraph-btn-secondary"
           >
             <ChevronRight class="w-3.5 h-3.5" />
             <span>单步推进: {{ pipelineState.currentStep }}</span>
@@ -544,12 +473,7 @@ const pipelineNodes = [
           <button
             @click="handleRunFullPipeline"
             :disabled="isRunningAll"
-            :class="[
-              'px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50',
-              isDark
-                ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07]'
-                : 'bg-[#8B3A2B] hover:bg-[#783023] text-white'
-            ]"
+            class="langgraph-btn-primary"
           >
             <template v-if="isRunningAll">
               <RefreshCw class="w-3.5 h-3.5 animate-spin" />
@@ -576,62 +500,35 @@ const pipelineNodes = [
                 selectedNodeForInspect = node.id;
                 activeTab = 'ARTIFACT';
               "
-              :class="[
-                'relative rounded-2xl p-4 border transition-all cursor-pointer shadow-sm group flex flex-col justify-between min-h-[145px]',
-                selectedNodeForInspect === node.id
-                  ? isDark
-                    ? 'bg-[#221811] border-[#C9942D] ring-2 ring-[#C9942D]/20 shadow-md'
-                    : 'bg-white border-[#8B3A2B] ring-2 ring-[#8B3A2B]/15 shadow-md'
-                  : isDark
-                  ? 'bg-[#18130E] border-[#2C2117] hover:border-[#4D3723]'
-                  : 'bg-white border-[#E8DFD5] hover:border-[#D5CAA8]'
-              ]"
+              class="langgraph-node-card"
+              :class="{ 'is-selected': selectedNodeForInspect === node.id }"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span
-                    :class="[
-                      'w-6 h-6 rounded-lg text-xs font-mono font-bold flex items-center justify-center',
-                      pipelineState.nodeStates[node.id].status === 'COMPLETED'
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : pipelineState.nodeStates[node.id].status === 'FAILED'
-                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                        : pipelineState.nodeStates[node.id].status === 'REPAIRING'
-                        ? 'bg-amber-500/20 text-amber-400 animate-spin'
-                        : isDark
-                        ? 'bg-[#241A12] text-[#A89073]'
-                        : 'bg-[#F0E6D8] text-[#8B3A2B]'
-                    ]"
+                    class="w-6 h-6 rounded-lg text-xs font-mono font-bold flex items-center justify-center"
+                    :class="getNodeStatusBadgeClass(pipelineState.nodeStates[node.id].status)"
                   >
                     {{ node.step }}
                   </span>
                   <component
                     :is="node.icon"
-                    :class="[
-                      'w-4 h-4',
+                    class="w-4 h-4"
+                    :class="
                       pipelineState.nodeStates[node.id].status === 'COMPLETED'
                         ? 'text-emerald-500'
                         : pipelineState.nodeStates[node.id].status === 'FAILED'
                         ? 'text-red-500'
-                        : isDark ? 'text-[#C9942D]' : 'text-[#8B3A2B]'
-                    ]"
+                        : 'text-theme-accent'
+                    "
                   />
                 </div>
 
                 <span
+                  class="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold"
                   :class="[
-                    'text-[10px] font-mono px-2 py-0.5 rounded-full font-bold',
-                    pipelineState.nodeStates[node.id].status === 'COMPLETED'
-                      ? 'bg-emerald-500/15 text-emerald-500'
-                      : pipelineState.nodeStates[node.id].status === 'RUNNING'
-                      ? 'bg-amber-500/15 text-amber-500 animate-pulse'
-                      : pipelineState.nodeStates[node.id].status === 'FAILED'
-                      ? 'bg-red-500/15 text-red-500'
-                      : pipelineState.nodeStates[node.id].status === 'REPAIRING'
-                      ? 'bg-amber-500/15 text-amber-500 animate-pulse'
-                      : pipelineState.currentStep === node.id
-                      ? isDark ? 'bg-[#C9942D]/20 text-[#E5C384]' : 'bg-[#8B3A2B]/15 text-[#8B3A2B]'
-                      : 'opacity-40'
+                    getNodeStatusPillClass(pipelineState.nodeStates[node.id].status),
+                    pipelineState.currentStep === node.id ? 'bg-theme-accent/15 text-theme-accent font-bold' : ''
                   ]"
                 >
                   {{
@@ -649,22 +546,17 @@ const pipelineNodes = [
               </div>
 
               <div class="space-y-1 my-2">
-                <h4 :class="['font-bold text-xs', isDark ? 'text-[#F3EFEA]' : 'text-[#1C1917]']">
+                <h4 class="font-bold text-xs text-theme-ink">
                   {{ node.title }}
                 </h4>
-                <p :class="['text-[11px] leading-relaxed line-clamp-2', isDark ? 'text-[#A89073]' : 'text-[#786B60]']">
+                <p class="text-[11px] leading-relaxed line-clamp-2 text-theme-muted">
                   {{ node.desc }}
                 </p>
               </div>
 
-              <div
-                :class="[
-                  'pt-2 border-t flex items-center justify-between text-[11px]',
-                  isDark ? 'border-[#291F16] text-[#A89073]' : 'border-[#F0EAE1] text-[#8C7E72]'
-                ]"
-              >
+              <div class="pt-2 border-t border-theme-border flex items-center justify-between text-[11px] text-theme-muted">
                 <span class="font-mono">{{ node.id }}</span>
-                <span class="group-hover:translate-x-0.5 transition-transform font-medium">
+                <span class="group-hover:translate-x-0.5 transition-transform font-medium text-theme-accent">
                   查看产物 →
                 </span>
               </div>
@@ -672,34 +564,29 @@ const pipelineNodes = [
           </div>
 
           <!-- Feature highlights -->
-          <div
-            :class="[
-              'rounded-2xl p-5 border shadow-xs space-y-3 font-sans',
-              isDark ? 'bg-[#15110E] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-            ]"
-          >
+          <div class="langgraph-info-card space-y-3 font-sans">
             <div class="flex items-center gap-2">
-              <ShieldCheck :class="['w-4 h-4', isDark ? 'text-[#C9942D]' : 'text-[#8B3A2B]']" />
-              <h3 class="font-bold text-xs">
+              <ShieldCheck class="w-4 h-4 text-theme-accent" />
+              <h3 class="font-bold text-xs text-theme-ink">
                 为什么剧本创作需要 LangGraph 而不是单次 LLM Prompt？
               </h3>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div :class="['p-3 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                <span class="font-bold block mb-1">1. 有状态长拓扑图 (Stateful Graph)</span>
-                <p :class="['leading-relaxed text-[11px]', isDark ? 'text-[#A89073]' : 'text-[#786B60]']">
+              <div class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle">
+                <span class="font-bold block mb-1 text-theme-ink">1. 有状态长拓扑图 (Stateful Graph)</span>
+                <p class="leading-relaxed text-[11px] text-theme-muted">
                   各节点传递严格结构化的中间产物（实体库、关系图、密室骨架、NPC边界），杜绝单次调用丢失上下文。
                 </p>
               </div>
-              <div :class="['p-3 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                <span class="font-bold block mb-1">2. 确定性硬规则门禁 (Engine Validation)</span>
-                <p :class="['leading-relaxed text-[11px]', isDark ? 'text-[#A89073]' : 'text-[#786B60]']">
+              <div class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle">
+                <span class="font-bold block mb-1 text-theme-ink">2. 确定性硬规则门禁 (Engine Validation)</span>
+                <p class="leading-relaxed text-[11px] text-theme-muted">
                   由 Game Engine 负责确定性校验（时空碰撞、反锁悖论、口供断裂），而非由 LLM 主观幻觉自行判断。
                 </p>
               </div>
-              <div :class="['p-3 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                <span class="font-bold block mb-1">3. 条件分支自愈重规划 (Revision Loop)</span>
-                <p :class="['leading-relaxed text-[11px]', isDark ? 'text-[#A89073]' : 'text-[#786B60]']">
+              <div class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle">
+                <span class="font-bold block mb-1 text-theme-ink">3. 条件分支自愈重规划 (Revision Loop)</span>
+                <p class="leading-relaxed text-[11px] text-theme-muted">
                   校验失败不抛弃成果，自动进入定向自愈节点微调时间戳与证据钥匙，形成闭环后才准予发布。
                 </p>
               </div>
@@ -717,35 +604,22 @@ const pipelineNodes = [
                 sound.playPaperRustle();
                 selectedNodeForInspect = node.id;
               "
-              :class="[
-                'px-3 py-1.5 rounded-xl border transition cursor-pointer font-medium whitespace-nowrap',
-                selectedNodeForInspect === node.id
-                  ? isDark
-                    ? 'bg-[#291F16] text-[#E5C384] border-[#C9942D] font-bold shadow-xs'
-                    : 'bg-[#8B3A2B] text-white border-[#8B3A2B] font-bold shadow-xs'
-                  : isDark
-                  ? 'bg-[#18130E] text-[#A89073] border-[#2C2117] hover:bg-[#201811]'
-                  : 'bg-white text-[#6E5F52] border-[#E0D5C7] hover:bg-[#FAF7F2]'
-              ]"
+              class="langgraph-artifact-chip"
+              :class="{ 'is-active': selectedNodeForInspect === node.id }"
             >
               <span>{{ pipelineState.nodeStates[node.id].label.split('与')[0] }}</span>
             </button>
           </div>
 
-          <div
-            :class="[
-              'rounded-2xl p-6 border shadow-sm font-sans space-y-4',
-              isDark ? 'bg-[#18130E] border-[#2C2117]' : 'bg-white border-[#E8DFD5]'
-            ]"
-          >
+          <div class="langgraph-info-card font-sans space-y-4">
             <!-- 1. DOC_PARSE -->
             <div v-if="selectedNodeForInspect === 'DOC_PARSE'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     01 文档解析产物 (DocParseArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     已成功提取文档原始字数与四大关键实体清单
                   </p>
                 </div>
@@ -755,36 +629,36 @@ const pipelineNodes = [
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-                <div :class="['p-3.5 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold block mb-2 text-[#C9942D]">涉案人物实体:</span>
-                  <ul class="space-y-1 opacity-90">
+                <div class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle">
+                  <span class="font-bold block mb-2 text-theme-accent">涉案人物实体:</span>
+                  <ul class="space-y-1 text-theme-secondary opacity-90">
                     <li v-for="(c, i) in (pipelineState.artifacts.DOC_PARSE?.entities.characters || ['陈默', '林岚', '周衡', '许宁', '赵磊'])" :key="i">
                       • {{ c }}
                     </li>
                   </ul>
                 </div>
 
-                <div :class="['p-3.5 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold block mb-2 text-[#C9942D]">涉案空间坐标:</span>
-                  <ul class="space-y-1 opacity-90">
+                <div class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle">
+                  <span class="font-bold block mb-2 text-theme-accent">涉案空间坐标:</span>
+                  <ul class="space-y-1 text-theme-secondary opacity-90">
                     <li v-for="(l, i) in (pipelineState.artifacts.DOC_PARSE?.entities.locations || ['文物修复室', '中央艺术展厅', '策展人办公室', '安保监控室'])" :key="i">
                       • {{ l }}
                     </li>
                   </ul>
                 </div>
 
-                <div :class="['p-3.5 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold block mb-2 text-[#C9942D]">关键物理物证:</span>
-                  <ul class="space-y-1 opacity-90">
+                <div class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle">
+                  <span class="font-bold block mb-2 text-theme-accent">关键物理物证:</span>
+                  <ul class="space-y-1 text-theme-secondary opacity-90">
                     <li v-for="(c, i) in (pipelineState.artifacts.DOC_PARSE?.entities.clues || ['停摆怀表', '带颜料抹布', '撕碎借款协议', '门禁刷卡'])" :key="i">
                       • {{ c }}
                     </li>
                   </ul>
                 </div>
 
-                <div :class="['p-3.5 rounded-xl border', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold block mb-2 text-[#C9942D]">时空时间基准:</span>
-                  <ul class="space-y-1 opacity-90">
+                <div class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle">
+                  <span class="font-bold block mb-2 text-theme-accent">时空时间基准:</span>
+                  <ul class="space-y-1 text-theme-secondary opacity-90">
                     <li v-for="(t, i) in (pipelineState.artifacts.DOC_PARSE?.entities.timeAnchors || ['21:50 散场', '22:00 理论', '22:15 致死', '22:30 破门'])" :key="i">
                       • {{ t }}
                     </li>
@@ -795,19 +669,19 @@ const pipelineNodes = [
 
             <!-- 2. SCRIPT_ANALYZE -->
             <div v-else-if="selectedNodeForInspect === 'SCRIPT_ANALYZE'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     02 剧本分析与动机图谱 (ScriptAnalyzeArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     自动建立嫌疑人社会关系矩阵、利益冲突与作案动机排查
                   </p>
                 </div>
               </div>
 
               <div class="space-y-3">
-                <span class="text-xs font-bold block">动机冲突图谱矩阵：</span>
+                <span class="text-xs font-bold block text-theme-ink">动机冲突图谱矩阵：</span>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                   <div
                     v-for="(m, i) in (pipelineState.artifacts.SCRIPT_ANALYZE?.motives || [
@@ -819,22 +693,22 @@ const pipelineNodes = [
                     :class="[
                       'p-3 rounded-xl border space-y-1.5',
                       m.severity === 'FATAL'
-                        ? isDark ? 'bg-red-950/40 border-red-500/40' : 'bg-red-50 border-red-200'
-                        : isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]'
+                        ? 'bg-red-500/10 border-red-500/30'
+                        : 'bg-theme-card-subtle border-theme-border'
                     ]"
                   >
                     <div class="flex items-center justify-between">
-                      <span class="font-bold text-xs">{{ m.suspect }} → {{ m.target }}</span>
+                      <span class="font-bold text-xs text-theme-ink">{{ m.suspect }} → {{ m.target }}</span>
                       <span
                         :class="[
                           'text-[10px] font-mono px-1.5 py-0.5 rounded font-bold',
-                          m.severity === 'FATAL' ? 'bg-red-600 text-white' : 'opacity-60'
+                          m.severity === 'FATAL' ? 'bg-red-600 text-white' : 'opacity-60 text-theme-muted'
                         ]"
                       >
                         {{ m.severity }}
                       </span>
                     </div>
-                    <p :class="['leading-relaxed text-[11px]', isDark ? 'text-[#C5B7A8]' : 'text-[#5C4F44]']">
+                    <p class="leading-relaxed text-[11px] text-theme-secondary">
                       {{ m.reason }}
                     </p>
                   </div>
@@ -844,35 +718,35 @@ const pipelineNodes = [
 
             <!-- 3. CASE_PLAN -->
             <div v-else-if="selectedNodeForInspect === 'CASE_PLAN'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     03 案件规划与核心诡计 (CasePlanArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     确立密室破局物理机制、时间线错觉与反转节奏
                   </p>
                 </div>
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div :class="['p-4 rounded-xl border space-y-2', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold text-xs text-[#C9942D] block">物理与时空核心诡计：</span>
-                  <p class="leading-relaxed">
+                <div class="p-4 rounded-xl border border-theme-border bg-theme-card-subtle space-y-2">
+                  <span class="font-bold text-xs text-theme-accent block">物理与时空核心诡计：</span>
+                  <p class="leading-relaxed text-theme-ink">
                     {{
                       pipelineState.artifacts.CASE_PLAN?.truth.coreTrick ||
                       '利用停摆金怀表倒拨 20 分钟制造死者活人假象；通过备用门禁卡从外侧完成反锁。'
                     }}
                   </p>
-                  <div class="pt-2 border-t border-inherit space-y-1 text-[11px] opacity-75">
+                  <div class="pt-2 border-t border-theme-border space-y-1 text-[11px] text-theme-muted">
                     <div>• 法医死亡推断窗口：{{ pipelineState.artifacts.CASE_PLAN?.truth.murderWindow.start || '22:10' }} - {{ pipelineState.artifacts.CASE_PLAN?.truth.murderWindow.end || '22:20' }}</div>
                     <div>• 第一凶案现场：{{ pipelineState.artifacts.CASE_PLAN?.truth.foundLocation || '文物修复室' }}</div>
                     <div>• 致死机制：{{ pipelineState.artifacts.CASE_PLAN?.truth.causeOfDeath || '后脑钝器打击致颅脑损伤' }}</div>
                   </div>
                 </div>
 
-                <div :class="['p-4 rounded-xl border space-y-2', isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]']">
-                  <span class="font-bold text-xs text-[#C9942D] block">玩家叙事推进节奏：</span>
+                <div class="p-4 rounded-xl border border-theme-border bg-theme-card-subtle space-y-2">
+                  <span class="font-bold text-xs text-theme-accent block">玩家叙事推进节奏：</span>
                   <div class="space-y-1.5">
                     <div
                       v-for="(b, i) in (pipelineState.artifacts.CASE_PLAN?.narrativeBeats || [
@@ -884,8 +758,8 @@ const pipelineNodes = [
                       :key="i"
                       class="flex items-center justify-between text-[11px]"
                     >
-                      <span class="font-bold">{{ b.stage }}：{{ b.title }}</span>
-                      <span class="opacity-60 font-mono">触发物证: {{ b.triggerClue }}</span>
+                      <span class="font-bold text-theme-ink">{{ b.stage }}：{{ b.title }}</span>
+                      <span class="text-theme-muted font-mono">触发物证: {{ b.triggerClue }}</span>
                     </div>
                   </div>
                 </div>
@@ -894,19 +768,19 @@ const pipelineNodes = [
 
             <!-- 4. CASE_GENERATE -->
             <div v-else-if="selectedNodeForInspect === 'CASE_GENERATE'" class="space-y-5">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     04 案件生成与 NPC 防剧透回答边界 (CaseGenerateArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     已生成全量微观物证、时间线与 4 组嫌疑人专属背景知识库与防破防回答边界系统指令
                   </p>
                 </div>
               </div>
 
               <div class="space-y-3">
-                <span class="text-xs font-bold block">
+                <span class="text-xs font-bold block text-theme-ink">
                   NPC 背景知识库与防剧透护栏边界 (NPC Knowledge Boundaries & Anti-Spoiler Prompts)：
                 </span>
 
@@ -914,24 +788,16 @@ const pipelineNodes = [
                   <div
                     v-for="npc in (pipelineState.artifacts.CASE_GENERATE?.npcBoundaries || (pipelineState.generatedCase ? buildNPCKnowledgeAndBoundaries(pipelineState.generatedCase) : []))"
                     :key="npc.suspectId"
-                    :class="[
-                      'p-4 rounded-xl border space-y-3 text-xs',
-                      isDark ? 'bg-[#100D0A] border-[#291F16]' : 'bg-[#FAF7F2] border-[#EAE1D5]'
-                    ]"
+                    class="p-4 rounded-xl border border-theme-border bg-theme-card-subtle space-y-3 text-xs"
                   >
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
-                        <span
-                          :class="[
-                            'w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs',
-                            isDark ? 'bg-[#241A12] text-[#E5C384]' : 'bg-[#8B3A2B] text-white'
-                          ]"
-                        >
+                        <span class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs bg-theme-accent text-white">
                           {{ npc.name.slice(0, 1) }}
                         </span>
                         <div>
-                          <span class="font-bold text-sm">{{ npc.name }}</span>
-                          <span class="text-[11px] opacity-60 ml-1.5">{{ npc.title }}</span>
+                          <span class="font-bold text-sm text-theme-ink">{{ npc.name }}</span>
+                          <span class="text-[11px] text-theme-muted ml-1.5">{{ npc.title }}</span>
                         </div>
                       </div>
                       <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
@@ -940,21 +806,21 @@ const pipelineNodes = [
                     </div>
 
                     <div class="space-y-1">
-                      <span class="font-bold text-[11px] text-[#C9942D] block">
+                      <span class="font-bold text-[11px] text-theme-accent block">
                         【NPC 背景认知与记忆边界】:
                       </span>
-                      <ul class="space-y-1 text-[11px] opacity-85 leading-relaxed">
+                      <ul class="space-y-1 text-[11px] text-theme-secondary leading-relaxed">
                         <li v-for="(k, ki) in npc.backgroundKnowledge.slice(0, 3)" :key="ki">
                           • {{ k }}
                         </li>
                       </ul>
                     </div>
 
-                    <div class="space-y-1 pt-2 border-t border-inherit">
+                    <div class="space-y-1 pt-2 border-t border-theme-border">
                       <span class="font-bold text-[11px] text-red-500 block">
                         【严格禁止讨论与自辩策略】:
                       </span>
-                      <div class="text-[11px] space-y-1 leading-relaxed opacity-90">
+                      <div class="text-[11px] space-y-1 leading-relaxed text-theme-secondary">
                         <div>• 禁答敏感点：{{ npc.boundaryRules.forbiddenTopics[0] }}</div>
                         <div>• 质询应对：{{ npc.boundaryRules.confessionDefense }}</div>
                       </div>
@@ -966,20 +832,21 @@ const pipelineNodes = [
 
             <!-- 5. LOGIC_VALIDATE -->
             <div v-else-if="selectedNodeForInspect === 'LOGIC_VALIDATE'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     05 确定性硬规则校验矩阵 (LogicValidateArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     Game Engine 严苛审查时空重叠、物理自锁悖论与不在场证明
                   </p>
                 </div>
                 <span
-                  :class="[
-                    'text-base font-bold font-mono',
-                    pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid ? 'text-emerald-500' : 'text-amber-500'
-                  ]"
+                  class="text-base font-bold font-mono"
+                  :class="{
+                    'text-emerald-500': pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid,
+                    'text-amber-500': !pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid
+                  }"
                 >
                   综合得分: {{ pipelineState.artifacts.LOGIC_VALIDATE?.report.score || 100 }} / 100
                 </span>
@@ -994,26 +861,23 @@ const pipelineNodes = [
                     { id: '4', name: '真凶作案时间不在场矛盾检查', status: 'PASS', note: '不在场证明留有合理破绽。' },
                   ])"
                   :key="i"
-                  :class="[
-                    'p-3 rounded-xl border flex items-center justify-between',
-                    chk.status === 'PASS'
-                      ? isDark ? 'bg-emerald-950/20 border-emerald-500/20' : 'bg-emerald-50 border-emerald-200'
-                      : isDark ? 'bg-red-950/20 border-red-500/20' : 'bg-red-50 border-red-200'
-                  ]"
+                  class="p-3 rounded-xl border flex items-center justify-between"
+                  :class="{
+                    'bg-emerald-500/10 border-emerald-500/20': chk.status === 'PASS',
+                    'bg-red-500/10 border-red-500/20': chk.status !== 'PASS'
+                  }"
                 >
                   <div class="flex items-center gap-2.5">
                     <CheckCircle2 v-if="chk.status === 'PASS'" class="w-4 h-4 text-emerald-500" />
                     <AlertTriangle v-else class="w-4 h-4 text-red-500" />
                     <div>
-                      <span class="font-bold block text-xs">{{ chk.name }}</span>
-                      <span class="text-[11px] opacity-75">{{ chk.note }}</span>
+                      <span class="font-bold block text-xs text-theme-ink">{{ chk.name }}</span>
+                      <span class="text-[11px] text-theme-muted">{{ chk.note }}</span>
                     </div>
                   </div>
                   <span
-                    :class="[
-                      'font-mono font-bold text-xs',
-                      chk.status === 'PASS' ? 'text-emerald-500' : 'text-red-500'
-                    ]"
+                    class="font-mono font-bold text-xs"
+                    :class="{ 'text-emerald-500': chk.status === 'PASS', 'text-red-500': chk.status !== 'PASS' }"
                   >
                     {{ chk.status }}
                   </span>
@@ -1023,12 +887,12 @@ const pipelineNodes = [
 
             <!-- 6. REVISION_NODE -->
             <div v-else-if="selectedNodeForInspect === 'REVISION_NODE'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     06 定向自愈与重规划产物 (RevisionArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     捕获逻辑矛盾后，自动触发 Directed Cyclic Feedback Loop 注入补丁
                   </p>
                 </div>
@@ -1054,10 +918,7 @@ const pipelineNodes = [
                     },
                   ])"
                   :key="i"
-                  :class="[
-                    'p-3.5 rounded-xl border space-y-2',
-                    isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]'
-                  ]"
+                  class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle space-y-2"
                 >
                   <div class="flex items-center justify-between">
                     <span class="font-bold text-emerald-400 font-mono">
@@ -1067,7 +928,7 @@ const pipelineNodes = [
                       已打补丁
                     </span>
                   </div>
-                  <p class="leading-relaxed opacity-90">{{ fix.description }}</p>
+                  <p class="leading-relaxed text-theme-secondary">{{ fix.description }}</p>
                   <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
                     <div class="p-2 rounded bg-red-950/30 text-red-300 border border-red-500/20">
                       <span class="font-bold block">修复前 (矛盾):</span>
@@ -1084,12 +945,12 @@ const pipelineNodes = [
 
             <!-- 7. HUMAN_REVIEW -->
             <div v-else-if="selectedNodeForInspect === 'HUMAN_REVIEW'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     07 人工审核微调清单 (HumanReviewArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     创作者签署确认：所有要素符合沉浸互动探案标准
                   </p>
                 </div>
@@ -1108,10 +969,7 @@ const pipelineNodes = [
                     '确定性硬逻辑校验已全绿（100分闭环）',
                   ]"
                   :key="i"
-                  :class="[
-                    'p-3 rounded-xl border flex items-center justify-between',
-                    isDark ? 'bg-[#100D0A] border-[#241B13]' : 'bg-[#FAF7F2] border-[#EAE1D5]'
-                  ]"
+                  class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle flex items-center justify-between text-theme-ink"
                 >
                   <span class="font-medium">{{ item }}</span>
                   <span class="flex items-center gap-1 text-emerald-500 font-bold text-xs">
@@ -1124,29 +982,24 @@ const pipelineNodes = [
 
             <!-- 8. PUBLISHED -->
             <div v-else-if="selectedNodeForInspect === 'PUBLISHED'" class="space-y-4">
-              <div class="flex items-center justify-between pb-3 border-b border-inherit">
+              <div class="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <h3 class="font-bold text-sm">
+                  <h3 class="font-bold text-sm text-theme-ink">
                     08 案件发布就绪 (PublishedArtifact)
                   </h3>
-                  <p :class="['text-xs', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+                  <p class="text-xs text-theme-muted">
                     已生成完整的游戏引擎可执行案卷对象，随时进入试玩
                   </p>
                 </div>
               </div>
 
-              <div
-                :class="[
-                  'p-4 rounded-xl border text-center space-y-3',
-                  isDark ? 'bg-[#100D0A] border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'
-                ]"
-              >
+              <div class="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center space-y-3">
                 <CheckCircle2 class="w-8 h-8 text-emerald-500 mx-auto" />
                 <div>
-                  <h4 class="font-bold text-sm">
+                  <h4 class="font-bold text-sm text-theme-ink">
                     《{{ pipelineState.generatedCase?.title || '午夜画廊：锁闭之谜' }}》发布就绪
                   </h4>
-                  <p class="text-xs opacity-75 mt-1">
+                  <p class="text-xs text-theme-muted mt-1">
                     已装载 4 个场景、{{ pipelineState.generatedCase?.clues.length || 8 }} 件证物、4 位 NPC 的全部防剧透知识库边界。
                   </p>
                 </div>
@@ -1159,12 +1012,7 @@ const pipelineNodes = [
                       }
                       emit('close');
                     "
-                    :class="[
-                      'px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer',
-                      isDark
-                        ? 'bg-[#291F16] text-[#E5C384] border border-[#4D3723] hover:bg-[#32261B]'
-                        : 'bg-white text-[#8B3A2B] border border-[#D5CAA8] hover:bg-[#FAF7F2]'
-                    ]"
+                    class="langgraph-btn-secondary"
                   >
                     装载至创作工作台
                   </button>
@@ -1174,12 +1022,7 @@ const pipelineNodes = [
                         emit('directPlay', pipelineState.generatedCase);
                       }
                     "
-                    :class="[
-                      'px-5 py-2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5',
-                      isDark
-                        ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07]'
-                        : 'bg-[#8B3A2B] hover:bg-[#783023] text-white'
-                    ]"
+                    class="langgraph-btn-primary"
                   >
                     <Play class="w-3.5 h-3.5 fill-current" />
                     <span>立即试玩刚刚生成的案件</span>
@@ -1192,15 +1035,10 @@ const pipelineNodes = [
 
         <!-- VIEW C: TERMINAL -->
         <div v-if="activeTab === 'TERMINAL'" class="flex-1 overflow-y-auto p-6 font-mono text-xs">
-          <div
-            :class="[
-              'rounded-2xl p-4 border space-y-2 h-full flex flex-col justify-between',
-              isDark ? 'bg-[#090705] border-[#221811] text-[#E5DCD0]' : 'bg-[#1C1816] text-[#E8DFD5] border-[#362E2B]'
-            ]"
-          >
+          <div class="rounded-2xl p-4 border border-theme-border bg-stone-950 text-stone-200 space-y-2 h-full flex flex-col justify-between">
             <div class="flex items-center justify-between pb-2 border-b border-stone-800">
               <div class="flex items-center gap-2">
-                <Terminal class="w-4 h-4 text-[#C9942D]" />
+                <Terminal class="w-4 h-4 text-theme-accent" />
                 <span class="font-bold text-[11px] uppercase tracking-wider text-stone-400">
                   LangGraph Engine Execution Logs
                 </span>
@@ -1215,7 +1053,7 @@ const pipelineNodes = [
                 <span class="text-stone-500 shrink-0">[{{ log.timestamp }}]</span>
                 <span
                   :class="[
-                    'px-1.5 py-0.2 rounded text-[10px] font-bold shrink-0',
+                    'px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0',
                     log.level === 'SUCCESS'
                       ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40'
                       : log.level === 'WARN'
@@ -1252,23 +1090,18 @@ const pipelineNodes = [
       </div>
 
       <!-- 4. MODAL FOOTER BAR -->
-      <div
-        :class="[
-          'px-6 py-3 border-t flex items-center justify-between shrink-0 font-sans text-xs',
-          isDark ? 'bg-[#18130E] border-[#2C2117]' : 'bg-[#F2EBE1] border-[#DFD5C6]'
-        ]"
-      >
+      <footer class="langgraph-footer">
         <div class="flex items-center gap-3">
-          <span :class="['font-mono', isDark ? 'text-[#8C765E]' : 'text-[#8C7E72]']">
+          <span class="font-mono text-theme-muted">
             当前就绪案卷：{{ pipelineState.generatedCase?.title || '午夜画廊：锁闭之谜' }}
           </span>
           <span
-            :class="[
-              'px-2 py-0.5 rounded-full text-[10px] font-bold',
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+            :class="
               pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid
                 ? 'bg-emerald-500/15 text-emerald-500'
                 : 'bg-amber-500/15 text-amber-500'
-            ]"
+            "
           >
             {{ pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid ? '规则闭环通过 (100%)' : '待校验修复' }}
           </span>
@@ -1277,12 +1110,7 @@ const pipelineNodes = [
         <div class="flex items-center gap-2">
           <button
             @click="emit('close')"
-            :class="[
-              'px-4 py-1.5 rounded-xl border transition cursor-pointer font-medium',
-              isDark
-                ? 'border-[#3E2D1E] text-[#A89073] hover:bg-[#201811]'
-                : 'border-[#E0D5C7] text-[#6E5F52] hover:bg-[#FAF7F2]'
-            ]"
+            class="langgraph-btn-secondary"
           >
             关闭
           </button>
@@ -1294,12 +1122,7 @@ const pipelineNodes = [
               }
               emit('close');
             "
-            :class="[
-              'px-4 py-1.5 rounded-xl border font-bold transition cursor-pointer',
-              isDark
-                ? 'bg-[#291F16] text-[#E5C384] border-[#4D3723] hover:bg-[#32261B]'
-                : 'bg-white text-[#8B3A2B] border-[#D5CAA8] hover:bg-[#FAF7F2]'
-            ]"
+            class="langgraph-btn-secondary font-bold"
           >
             应用至工作台
           </button>
@@ -1310,18 +1133,93 @@ const pipelineNodes = [
                 emit('directPlay', pipelineState.generatedCase);
               }
             "
-            :class="[
-              'px-5 py-1.5 rounded-xl font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5',
-              isDark
-                ? 'bg-gradient-to-r from-[#DFB36C] via-[#C9942D] to-[#DFB36C] text-[#140E07]'
-                : 'bg-[#8B3A2B] hover:bg-[#783023] text-white'
-            ]"
+            class="langgraph-btn-primary"
           >
             <Play class="w-3.5 h-3.5 fill-current" />
             <span>进入游戏试玩</span>
           </button>
         </div>
-      </div>
+      </footer>
     </div>
   </div>
 </template>
+
+<style scoped>
+@reference "../../index.css";
+
+.langgraph-modal-overlay {
+  @apply fixed inset-0 z-50 backdrop-blur-md flex items-center justify-center p-2 sm:p-5 select-none font-serif bg-black/60 transition-colors duration-300;
+}
+
+.langgraph-modal-window {
+  @apply relative w-full max-w-7xl h-[94vh] max-h-230 rounded-2xl border border-theme-border bg-theme-desk text-theme-ink flex flex-col overflow-hidden shadow-2xl transition-all duration-300;
+}
+
+.langgraph-header {
+  @apply px-5 py-3 border-b border-theme-border bg-theme-surface flex items-center justify-between shrink-0 transition-colors;
+}
+
+.langgraph-brand-badge {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-xs bg-theme-accent text-white;
+}
+
+.langgraph-strip {
+  @apply px-5 py-2.5 border-b border-theme-border bg-theme-card-subtle flex flex-col md:flex-row items-center justify-between gap-3 text-xs font-sans shrink-0;
+}
+
+.langgraph-tab-group {
+  @apply flex items-center p-1 rounded-xl border border-theme-border bg-theme-surface text-xs font-sans font-medium;
+}
+
+.langgraph-tab-btn {
+  @apply flex items-center gap-1.5 px-3 py-1 rounded-lg transition cursor-pointer text-theme-muted hover:text-theme-ink;
+}
+
+.langgraph-tab-btn.is-active {
+  @apply bg-theme-accent text-white font-bold shadow-xs;
+}
+
+.langgraph-icon-btn {
+  @apply p-1.5 rounded-lg border border-theme-border text-theme-muted hover:text-theme-ink hover:bg-theme-surface transition cursor-pointer;
+}
+
+.langgraph-btn-primary {
+  @apply px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50 bg-theme-accent hover:opacity-90 text-white;
+}
+
+.langgraph-btn-secondary {
+  @apply px-3 py-1.5 rounded-lg border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-ink font-medium text-xs transition cursor-pointer flex items-center gap-1.5 disabled:opacity-40;
+}
+
+.langgraph-preset-chip {
+  @apply px-2.5 py-1 rounded-lg border border-theme-border bg-theme-surface text-theme-muted text-[11px] transition cursor-pointer font-serif hover:border-theme-border-strong hover:text-theme-ink;
+}
+
+.langgraph-preset-chip.is-active {
+  @apply bg-theme-card text-theme-accent border-theme-accent font-bold shadow-xs;
+}
+
+.langgraph-node-card {
+  @apply relative rounded-2xl p-4 border border-theme-border bg-theme-card transition-all cursor-pointer shadow-sm flex flex-col justify-between min-h-36 hover:border-theme-border-strong;
+}
+
+.langgraph-node-card.is-selected {
+  @apply border-theme-accent ring-2 ring-theme-accent/20 shadow-md bg-theme-surface;
+}
+
+.langgraph-info-card {
+  @apply rounded-2xl p-5 border border-theme-border bg-theme-card shadow-xs;
+}
+
+.langgraph-artifact-chip {
+  @apply px-3 py-1.5 rounded-xl border border-theme-border bg-theme-surface text-theme-muted transition cursor-pointer font-medium whitespace-nowrap hover:text-theme-ink hover:bg-theme-card-subtle;
+}
+
+.langgraph-artifact-chip.is-active {
+  @apply bg-theme-card text-theme-accent border-theme-accent font-bold shadow-xs;
+}
+
+.langgraph-footer {
+  @apply px-6 py-3 border-t border-theme-border bg-theme-surface flex items-center justify-between shrink-0 font-sans text-xs;
+}
+</style>
