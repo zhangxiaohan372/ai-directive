@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { sound } from '../utils/audio';
+import { onUnauthorized } from '../utils/request';
 
 export interface DetectiveUser {
   id: string;
@@ -77,18 +78,23 @@ const authStatus = ref<AuthStatus>(
 const expiredReason = ref<string>('');
 const isLoginModalOpen = ref<boolean>(false);
 
+const trigger401 = (reason?: string) => {
+  sound.playHeartbeatTick();
+  authStatus.value = 'expired_401';
+  expiredReason.value = reason || '侦探身份认证会话签名已过期，调度凭证失效 (HTTP 401 Unauthorized)。';
+  token.value = null;
+  localStorage.removeItem(STORAGE_KEY_AUTH);
+  isLoginModalOpen.value = true;
+};
+
+// 自动侦听全局 HTTP 请求层 401 拦截器
+onUnauthorized((reason) => {
+  trigger401(reason);
+});
+
 export function useAuth() {
   const isAuthenticated = computed(() => authStatus.value === 'authenticated' && !!currentUser.value);
   const is401Expired = computed(() => authStatus.value === 'expired_401');
-
-  const trigger401 = (reason?: string) => {
-    sound.playHeartbeatTick();
-    authStatus.value = 'expired_401';
-    expiredReason.value = reason || '侦探身份认证会话签名已过期，调度凭证失效 (HTTP 401 Unauthorized)。';
-    token.value = null;
-    localStorage.removeItem(STORAGE_KEY_AUTH);
-    isLoginModalOpen.value = true;
-  };
 
   const loginWithCredentials = async (
     badgeNo: string,
