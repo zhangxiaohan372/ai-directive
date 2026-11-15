@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import loginBgImage from '../../assets/images/login_bg_mystery_desk.jpg';
 import loginPaperBg from '../../assets/images/login_paper_dossier_bg.png';
-import { useAuth, PRESET_ACCOUNTS, type DetectiveUser } from '../../composables/useAuth';
+import { useAuth, type DetectiveUser } from '../../composables/useAuth';
 import { sound } from '../../utils/audio';
 import {
   Eye,
@@ -46,8 +46,8 @@ const {
 // 表单模式：登录 (login) | 注册 (register)
 const authMode = ref<'login' | 'register'>('login');
 
-const badgeInput = ref(PRESET_ACCOUNTS[0].badgeNo);
-const passcodeInput = ref(PRESET_ACCOUNTS[0].passcode);
+const badgeInput = ref('admin');
+const passcodeInput = ref('');
 const nicknameInput = ref('');
 const showPassword = ref(false);
 const rememberMe = ref(true);
@@ -138,14 +138,6 @@ const dashedBorderStyle = computed(() => ({
 
 const handleToggleAudio = () => {
   isMuted.value = sound.toggleMute();
-};
-
-const handleSelectPreset = (badgeNo: string, passcode: string) => {
-  sound.playPaperRustle();
-  authMode.value = 'login';
-  badgeInput.value = badgeNo;
-  passcodeInput.value = passcode;
-  errorMessage.value = '';
 };
 
 const switchMode = (mode: 'login' | 'register') => {
@@ -478,7 +470,7 @@ const handleSubmit = async () => {
                       v-model="badgeInput"
                       type="text"
                       autocomplete="username"
-                      :placeholder="authMode === 'login' ? '例如 CID-8492 或自定义账号' : '例如 DET-9901'"
+                      :placeholder="authMode === 'login' ? '请输入用户名 / 账号' : '设置用户名 / 账号'"
                       class="w-full bg-transparent outline-none font-mono text-sm tracking-wider"
                       :style="{ color: inkText, caretColor: '#7E2F22' }"
                     />
@@ -511,7 +503,7 @@ const handleSubmit = async () => {
                       v-model="passcodeInput"
                       :type="showPassword ? 'text' : 'password'"
                       autocomplete="current-password"
-                      placeholder="输入口令"
+                      placeholder="请输入登录密码"
                       class="w-full bg-transparent outline-none font-mono text-sm tracking-wider pr-8"
                       :style="{ color: inkText, caretColor: '#7E2F22' }"
                     />
@@ -588,26 +580,13 @@ const handleSubmit = async () => {
               </form>
             </div>
 
-            <!-- 【底栏基线行】：体验账号，与左页同一水平基线对齐 -->
+            <!-- 【底栏提示】：与左页同一水平基线对齐 -->
             <div class="pt-5 mt-4" :style="dashedBorderStyle">
               <div
-                class="flex items-center gap-3 text-xs font-serif flex-wrap h-12 items-center"
+                class="flex items-center gap-3 text-xs font-serif flex-wrap h-12"
                 :style="{ color: inkMuted }"
               >
-                <span>体验账号</span>
-                <button
-                  v-for="acc in PRESET_ACCOUNTS"
-                  :key="acc.badgeNo"
-                  type="button"
-                  @click="handleSelectPreset(acc.badgeNo, acc.passcode)"
-                  class="cursor-pointer transition underline-offset-2 hover:underline"
-                  :style="{
-                    color: badgeInput === acc.badgeNo && authMode === 'login' ? '#7E2F22' : inkMuted,
-                    fontWeight: badgeInput === acc.badgeNo && authMode === 'login' ? '700' : '400',
-                  }"
-                >
-                  {{ acc.user.name.split('（')[0].split('(')[0] }}
-                </button>
+                <span>请使用系统管理员或已登记侦探账号登录。</span>
               </div>
             </div>
 

@@ -116,6 +116,7 @@ service.interceptors.response.use(
     const status = error.response?.status || (error.code === 'ECONNABORTED' ? 408 : 500);
     const responseData = error.response?.data;
     const message =
+      responseData?.msg ||
       responseData?.error ||
       responseData?.message ||
       (error.code === 'ECONNABORTED' ? '请求超时 (15000ms)，请检查网络连接' : error.message) ||

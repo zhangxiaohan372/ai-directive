@@ -333,11 +333,11 @@ const handleScrollToCases = () => {
                   : 'border-[#8B3A2B]/30 bg-[#8B3A2B] text-white'
               "
             >
-              {{ currentUser?.initials || '侦' }}
+              {{ currentUser?.initials || '访' }}
             </div>
             <div class="hidden lg:flex flex-col text-left leading-none font-serif pr-1">
-              <span class="text-xs font-bold truncate max-w-[90px]">{{ currentUser?.name || '首席侦探' }}</span>
-              <span class="text-[9px] font-mono opacity-70">{{ currentUser?.badgeNo || 'CID-8492' }}</span>
+              <span class="text-xs font-bold truncate max-w-[90px]">{{ currentUser?.name || '未登录' }}</span>
+              <span class="text-[9px] font-mono opacity-70">{{ currentUser?.badgeNo || '点击登录' }}</span>
             </div>
           </button>
         </div>
