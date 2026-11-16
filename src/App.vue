@@ -7,10 +7,13 @@ import { useTheme } from './composables/useTheme';
 import { useGameState } from './composables/useGameState';
 import { createInitialRoom, advanceGamePhase } from './game/engine';
 
+import { useAuth } from './composables/useAuth';
+
 const route = useRoute();
 const router = useRouter();
 const { themeMode, toggleTheme } = useTheme();
 const { storySubtitle, roomState } = useGameState();
+const { openLogin } = useAuth();
 
 onMounted(() => {
   const params = new URLSearchParams(window.location.search);
@@ -19,6 +22,9 @@ onMounted(() => {
     const adv = advanceGamePhase(room);
     roomState.value = adv;
     router.replace('/game');
+  }
+  if (params.get('login') === '1') {
+    openLogin();
   }
 });
 

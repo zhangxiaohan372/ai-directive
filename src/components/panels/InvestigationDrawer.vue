@@ -136,8 +136,11 @@ const suggestedQuestions = computed(() => {
 </script>
 
 <template>
-  <div class="panel-dossier-card relative w-full h-full min-h-[480px] lg:min-h-[580px] backdrop-blur-md rounded-2xl overflow-hidden border transition-colors duration-300 flex flex-col font-serif select-none ring-1 ring-black/20">
-    <!-- 1. Header: Sleek Transcript Dossier Header -->
+  <div class="panel-dossier-card relative w-full h-full min-h-[480px] lg:min-h-[580px] rounded-2xl overflow-hidden border border-theme-border transition-colors duration-300 flex flex-col font-serif select-none shadow-xl bg-theme-card ring-1 ring-black/20">
+    <!-- Notebook Paper Top Edge Texture -->
+    <div class="h-1.5 w-full bg-linear-to-r from-theme-accent/30 via-theme-accent/60 to-theme-accent/30 opacity-70" />
+
+    <!-- 1. Header: Notebook Header with Subject Dossier -->
     <header class="panel-dossier-header p-3 border-b flex items-center justify-between transition-colors">
       <div v-if="suspect" class="flex items-center space-x-2.5 overflow-hidden">
         <img
@@ -154,7 +157,7 @@ const suggestedQuestions = computed(() => {
               · {{ suspect.title }}
             </span>
           </div>
-          <span class="text-[10px] font-mono block truncate text-theme-muted">
+          <span class="text-[10px] font-serif block truncate text-theme-muted">
             状态: {{ getSuspectStatusText(suspect) }}
           </span>
         </div>
@@ -170,7 +173,7 @@ const suggestedQuestions = computed(() => {
         v-if="suspect"
         type="button"
         @click="emit('openDossier', suspect)"
-        class="text-[11px] px-2 py-1 rounded transition cursor-pointer flex items-center space-x-1 shrink-0 border border-theme-border text-theme-secondary hover:text-theme-ink hover:bg-theme-card-subtle"
+        class="text-[11px] px-2.5 py-1 rounded-[10px] transition cursor-pointer flex items-center space-x-1 shrink-0 border border-theme-border text-theme-secondary hover:text-theme-ink hover:bg-theme-card-subtle shadow-xs"
         title="查看完整卷宗"
       >
         <FileText class="w-3 h-3 text-theme-accent" />
@@ -178,26 +181,26 @@ const suggestedQuestions = computed(() => {
       </button>
     </header>
 
-    <!-- 2. Middle: Transcript Dialogue Stream -->
-    <main class="flex-1 overflow-y-auto p-3.5 space-y-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-theme-border">
+    <!-- 2. Middle: Transcript Dialogue Stream (Ruled Notebook Page Feel) -->
+    <main class="flex-1 overflow-y-auto p-3.5 space-y-3.5 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-theme-border">
       <!-- If no suspect selected: suspect directory -->
       <div v-if="!suspect" class="h-full flex flex-col justify-center text-left py-6 px-2">
-        <span class="text-xs font-mono mb-2 uppercase tracking-wider block text-theme-muted">
-          // 现场涉案人员目录
+        <span class="text-xs font-serif mb-2.5 tracking-wider block text-theme-muted font-bold">
+          现场涉案人员录
         </span>
-        <div class="space-y-1.5">
+        <div class="space-y-2">
           <button
             v-for="s in SUSPECTS"
             :key="s.id"
             type="button"
             @click="emit('selectSuspect', s.id)"
-            class="w-full flex items-center justify-between p-2 rounded-lg border border-theme-border bg-theme-surface hover:bg-theme-card-subtle transition cursor-pointer text-left group shadow-xs"
+            class="w-full flex items-center justify-between p-2.5 rounded-[10px] border border-theme-border bg-theme-surface hover:bg-theme-card-subtle transition cursor-pointer text-left group shadow-xs"
           >
             <div class="flex items-center space-x-2.5 overflow-hidden">
               <img
                 :src="s.avatarImage || `/assets/portraits/${s.id}.jpg`"
                 :alt="s.name"
-                class="w-6 h-6 rounded-full object-cover object-top shrink-0 ring-1 ring-theme-border group-hover:ring-theme-accent/60"
+                class="w-7 h-7 rounded-full object-cover object-top shrink-0 ring-1 ring-theme-border group-hover:ring-theme-accent/60"
               />
               <span class="text-xs font-medium truncate text-theme-ink">
                 {{ s.name }}
@@ -215,8 +218,8 @@ const suggestedQuestions = computed(() => {
         v-else-if="relevantMessages.length === 0"
         class="h-full flex flex-col items-center justify-center py-8 text-center px-3 text-theme-muted"
       >
-        <span class="text-xs mb-1 text-theme-ink">
-          就案发当晚行踪向【{{ suspect.name }}】展开提问
+        <span class="text-xs mb-1 text-theme-ink font-medium">
+          就案发当晚行踪向【{{ suspect.name }}】展开质询
         </span>
         <span class="text-[10px] text-theme-muted">
           点击下方快捷质询，或出示现场物证破除口供矛盾
@@ -226,14 +229,16 @@ const suggestedQuestions = computed(() => {
       <!-- Messages list -->
       <template v-else>
         <div v-for="msg in relevantMessages" :key="msg.id">
-          <!-- Host narrator announcement -->
+          <!-- Host narrator announcement: Rubber Stamp Motif (NO // comment prefix) -->
           <div
             v-if="msg.senderRole === 'host'"
-            class="border border-theme-border bg-theme-card-subtle/80 rounded p-2 text-left"
+            class="border border-theme-border bg-theme-card-subtle/80 rounded-[10px] p-2.5 text-left shadow-xs"
           >
-            <span class="text-[9px] font-mono block mb-0.5 text-theme-accent">
-              // 现场旁白观察
-            </span>
+            <div class="mb-1.5">
+              <span class="rubber-stamp">
+                现场旁白
+              </span>
+            </div>
             <p class="text-xs leading-relaxed font-serif text-theme-ink">
               {{ msg.text }}
             </p>
@@ -245,16 +250,16 @@ const suggestedQuestions = computed(() => {
             class="flex flex-col space-y-0.5"
             :class="msg.senderRole === 'player' ? 'items-end' : 'items-start'"
           >
-            <span class="text-[9px] font-mono px-1 text-theme-muted">
+            <span class="text-[9px] font-serif px-1 text-theme-muted">
               {{ msg.senderRole === 'player' ? '首席侦探' : suspect.name }} · {{ msg.timestamp }}
             </span>
 
             <div
-              class="p-2.5 rounded-lg max-w-[92%] text-xs leading-relaxed border"
+              class="p-2.5 rounded-[10px] max-w-[92%] text-xs leading-relaxed border"
               :class="
                 msg.senderRole === 'player'
                   ? 'bg-theme-accent text-white border-theme-accent shadow-xs'
-                  : 'bg-theme-surface text-theme-ink border-theme-border'
+                  : 'bg-theme-surface text-theme-ink border-theme-border shadow-xs'
               "
             >
               <p class="font-serif tracking-normal">{{ msg.text }}</p>
@@ -266,7 +271,7 @@ const suggestedQuestions = computed(() => {
       <!-- Loading indicator -->
       <div
         v-if="isLoading"
-        class="flex items-center space-x-1.5 text-[11px] p-2 rounded border border-theme-border bg-theme-card-subtle text-theme-muted w-fit"
+        class="flex items-center space-x-1.5 text-[11px] p-2 rounded-[10px] border border-theme-border bg-theme-card-subtle text-theme-muted w-fit"
       >
         <Sparkles class="w-3 h-3 animate-spin text-theme-accent" />
         <span>{{ suspect ? `${suspect.name} 思考中...` : '推理分析中...' }}</span>
@@ -274,41 +279,44 @@ const suggestedQuestions = computed(() => {
       <div ref="messagesEndRef" />
     </main>
 
-    <!-- 3. Bottom: Questions & Input -->
+    <!-- 3. Bottom: Lined Paper Input / 笔记本底边填写线 -->
     <footer
       v-if="suspect"
-      class="panel-dossier-header p-2.5 border-t space-y-2 transition-colors"
+      class="panel-dossier-header p-3 border-t space-y-2.5 transition-colors"
     >
-      <!-- Quick Questions -->
-      <div class="flex items-center space-x-1 overflow-x-auto scrollbar-none pb-0.5">
+      <!-- Quick Questions (Pill buttons with 10px rounded) -->
+      <div class="flex items-center space-x-1.5 overflow-x-auto scrollbar-none pb-0.5">
         <button
           v-for="(q, idx) in suggestedQuestions"
           :key="idx"
           type="button"
           :disabled="isLoading"
           @click="handleSend(q.text)"
-          class="text-[10px] px-2 py-0.5 rounded border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-secondary hover:text-theme-accent transition shrink-0 cursor-pointer disabled:opacity-40"
+          class="text-[10px] px-2.5 py-1 rounded-[10px] border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-secondary hover:text-theme-accent transition shrink-0 cursor-pointer disabled:opacity-40 shadow-xs"
           :title="q.text"
         >
           {{ q.label }}
         </button>
       </div>
 
-      <!-- Input field -->
-      <form @submit.prevent="handleSend()" class="flex items-center space-x-1.5">
-        <input
-          type="text"
-          v-model="inputText"
-          :placeholder="`向 ${suspect.name} 质询口供...`"
-          :disabled="isLoading"
-          class="flex-1 border border-theme-border bg-theme-surface focus:border-theme-accent text-theme-ink placeholder-theme-muted rounded-md px-2.5 py-1.5 text-xs transition font-serif focus:outline-none"
-        />
+      <!-- Input Field: Authentic Notebook Fill-in Line (填写线，无边框方盒) -->
+      <form @submit.prevent="handleSend()" class="flex items-center space-x-2 pt-1 pb-0.5">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            v-model="inputText"
+            :placeholder="`向 ${suspect.name} 质询口供...`"
+            :disabled="isLoading"
+            class="w-full bg-transparent border-0 border-b-2 border-theme-border focus:border-theme-accent text-theme-ink placeholder-theme-muted px-1 py-1.5 text-xs transition-colors font-serif focus:outline-none focus:ring-0 rounded-none"
+          />
+        </div>
         <button
           type="submit"
           :disabled="!inputText.trim() || isLoading"
-          class="px-2.5 py-1.5 rounded-md font-bold text-xs transition cursor-pointer disabled:opacity-30 border border-theme-accent bg-theme-accent hover:bg-theme-accent-hover text-white shrink-0"
+          class="h-8 px-3 rounded-[10px] font-bold text-xs transition-all cursor-pointer disabled:opacity-30 border border-theme-accent bg-theme-accent hover:bg-theme-accent-hover text-white shrink-0 active:scale-95 shadow-xs"
+          title="记录口供"
         >
-          <Send class="w-3 h-3 text-white" />
+          <Send class="w-3.5 h-3.5 text-white" />
         </button>
       </form>
     </footer>

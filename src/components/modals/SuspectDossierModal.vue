@@ -23,7 +23,7 @@ const emit = defineEmits<{
     <!-- Dossier Envelope Container -->
     <div class="panel-dossier-card relative max-w-lg w-full shadow-2xl border-2 border-theme-border rounded-2xl p-6 md:p-8 font-serif overflow-hidden">
       <!-- Top Confidential Stamp Watermark -->
-      <div class="absolute top-4 right-14 select-none pointer-events-none rotate-12 border-2 border-red-500/50 text-red-500/70 px-3 py-1 font-mono text-xs font-bold tracking-widest uppercase rounded">
+      <div class="absolute top-4 right-14 select-none pointer-events-none rotate-12 border-2 border-theme-accent/60 text-theme-accent/80 px-3 py-1 font-mono text-xs font-bold tracking-widest uppercase rounded">
         CONFIDENTIAL · 内部卷宗
       </div>
 
@@ -88,11 +88,11 @@ const emit = defineEmits<{
         </div>
 
         <!-- Motive & Suspicion -->
-        <div class="p-3 bg-red-950/20 rounded-xl border border-red-500/30">
-          <span class="font-bold text-red-400 block mb-0.5 font-mono text-[11px]">
+        <div class="p-3 bg-theme-surface rounded-xl border border-theme-border">
+          <span class="font-bold text-theme-accent block mb-0.5 font-mono text-[11px]">
             【警方初步动机推断】
           </span>
-          <p class="text-red-300 text-[11px] leading-relaxed">
+          <p class="text-theme-ink text-[11px] leading-relaxed">
             {{ suspect.motiveSummary }}
           </p>
         </div>

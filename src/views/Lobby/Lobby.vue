@@ -161,7 +161,7 @@ const handleJoin = () => {
                 </div>
               </div>
 
-              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-950/20 text-emerald-500 border border-emerald-500/30 flex items-center space-x-1">
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-theme-card-subtle text-theme-ink border border-theme-border flex items-center space-x-1">
                 <UserCheck class="w-3 h-3" />
                 <span>已就绪</span>
               </span>

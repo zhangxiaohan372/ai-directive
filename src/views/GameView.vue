@@ -23,9 +23,11 @@ import TruthReview from '../components/panels/TruthReview.vue';
 import { addClueLink } from '../game/engine';
 import { useGameState } from '../composables/useGameState';
 import { useTheme } from '../composables/useTheme';
+import { useAuth } from '../composables/useAuth';
 
 const router = useRouter();
 const { themeMode, toggleTheme } = useTheme();
+const { currentUser, openLogin } = useAuth();
 const {
   roomState,
   currentSceneId,
@@ -91,116 +93,149 @@ const onRestart = () => {
 
 <template>
   <div class="flex-1 flex flex-col">
-    <!-- Top Nav Bar in Game Mode -->
+    <!-- Top Nav Bar in Game Mode (Unified with Home Header Structure) -->
     <header
       v-if="!isTruthPhase"
-      class="panel-dossier-header sticky top-0 z-40 px-4 py-2 backdrop-blur-md border-b border-theme-border transition-colors duration-300"
+      class="h-16 px-4 sm:px-8 border-b border-theme-border bg-theme-card/95 flex items-center justify-between shrink-0 sticky top-0 z-40 backdrop-blur-md transition-colors duration-300 font-serif"
     >
-      <div class="max-w-360 mx-auto flex items-center justify-between text-xs font-serif">
-        <!-- Left: Location -->
-        <div class="flex items-center space-x-2">
+      <!-- Left: Brand Logo + Dossier Breadcrumb -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          @click="onGoHome"
+          class="flex items-center gap-2.5 text-left group cursor-pointer"
+          title="返回首页"
+        >
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-theme-border bg-theme-surface text-theme-accent flex items-center justify-center shadow-xs shrink-0 font-serif font-black text-sm group-hover:border-theme-accent transition-colors">
+            密
+          </div>
+          <div class="hidden sm:block">
+            <span class="font-serif font-black text-sm sm:text-base text-theme-ink tracking-wide leading-none block">
+              AI Detective
+            </span>
+            <span class="text-[9px] font-serif tracking-widest text-theme-muted block mt-0.5">
+              智能探案平台
+            </span>
+          </div>
+        </button>
+
+        <span class="text-theme-border">|</span>
+
+        <div class="flex items-center gap-1.5 text-xs font-serif">
           <button
             type="button"
             @click="onGoHome"
-            class="transition font-medium cursor-pointer text-theme-muted hover:text-theme-ink"
+            class="text-theme-muted hover:text-theme-ink transition font-medium hidden md:inline cursor-pointer"
             title="返回封面"
           >
-            午夜画廊
+            午夜庄园 · 血色遗产
           </button>
-          <span class="text-theme-border">/</span>
+          <span class="text-theme-border hidden md:inline">/</span>
           <button
             type="button"
             @click="isFloorPlanOpen = true"
-            class="flex items-center space-x-1 transition cursor-pointer text-theme-secondary hover:text-theme-accent"
+            class="flex items-center gap-1 px-2.5 py-1 rounded-md border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-ink transition cursor-pointer"
             title="查看画廊平面图"
           >
             <MapPin class="w-3.5 h-3.5 text-theme-accent" />
-            <span class="font-bold text-theme-ink">
-              {{ currentSceneConfig.title }}
-            </span>
+            <span class="font-bold">{{ currentSceneConfig.title }}</span>
+            <span class="text-[10px] text-theme-muted hidden lg:inline">平面图</span>
           </button>
         </div>
+      </div>
 
-        <!-- Middle: Progress & Time -->
-        <div class="flex items-center space-x-3 text-xs font-mono text-theme-muted">
-          <div class="flex items-center space-x-1">
-            <span class="font-sans text-theme-muted">物证:</span>
-            <span
-              class="font-bold transition-all text-theme-accent"
-              :class="{ 'scale-110': clueCountPulse }"
-            >
-              {{ roomState.discoveredClueIds.length }}/8
-            </span>
-          </div>
-          <span class="text-theme-border">·</span>
-          <div class="flex items-center space-x-1">
-            <Clock class="w-3.5 h-3.5 text-theme-muted" />
-            <span class="text-theme-ink">
-              {{ formatTimer(elapsedSeconds) }}
-            </span>
-          </div>
+      <!-- Middle: Dossier Progress & Timer (Strict Monospace Hard Cap <= 2) -->
+      <div class="flex items-center gap-3 text-xs font-serif">
+        <div class="flex items-center gap-1 font-serif text-xs">
+          <span class="text-theme-muted">物证:</span>
+          <span
+            class="font-bold text-theme-accent transition-all font-serif"
+            :class="{ 'scale-110': clueCountPulse }"
+          >
+            {{ roomState.discoveredClueIds.length }}/8
+          </span>
         </div>
 
-        <!-- Right: Studio Trace, Theme Switcher, Sound & Exit -->
-        <div class="flex items-center space-x-2">
+        <span class="text-theme-border">·</span>
+
+        <!-- Monospace Slot 1: Case Dossier Code -->
+        <span class="font-mono text-[11px] text-theme-muted hidden xl:inline">
+          NO.1924-MG
+        </span>
+
+        <span class="text-theme-border hidden xl:inline">·</span>
+
+        <!-- Monospace Slot 2: Elapsed Timer -->
+        <div class="flex items-center gap-1 font-mono text-xs text-theme-ink">
+          <Clock class="w-3.5 h-3.5 text-theme-muted" />
+          <span>{{ formatTimer(elapsedSeconds) }}</span>
+        </div>
+      </div>
+
+      <!-- Right: Theme Switcher, Sound, Profile Avatar, Exit (Matches Home Topbar) -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Global Theme Switcher -->
+        <div
+          class="p-1 rounded-full border border-theme-border bg-theme-surface flex items-center gap-1 transition-all shadow-xs shrink-0"
+          title="全局主题切换：暗夜书房 / 白昼手稿"
+        >
           <button
             type="button"
-            @click="onGoStudio"
-            class="flex items-center space-x-1.5 px-2.5 py-1 rounded border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-accent transition text-[11px] font-sans cursor-pointer active:scale-95 shadow-sm"
-            title="查看该案件在 LangGraph 创作工坊中的逻辑验证报告与状态机"
+            @click="if (themeMode === 'dark') toggleTheme();"
+            class="portal-theme-switch-btn"
+            :class="{ 'is-active': themeMode === 'light' }"
+            title="切换为白昼手稿羊皮纸风格"
           >
-            <GitGraph class="w-3 h-3 text-theme-accent" />
-            <span class="hidden sm:inline">工坊逻辑图谱</span>
-            <span class="text-[10px] px-1 rounded font-mono bg-emerald-950/20 text-emerald-500 border border-emerald-500/30">
-              100%
-            </span>
-          </button>
-
-          <!-- In-Game Global Theme Switcher -->
-          <div
-            class="p-0.5 rounded-full border border-theme-border bg-theme-surface flex items-center gap-0.5 transition-all shadow-xs"
-            title="案件游玩全局主题切换：暗夜书房 / 白昼手稿"
-          >
-            <button
-              type="button"
-              @click="if (themeMode === 'dark') toggleTheme();"
-              class="game-theme-switch-btn"
-              :class="{ 'is-active': themeMode === 'light' }"
-              title="切换为白昼手稿羊皮纸风格"
-            >
-              <Sun class="w-3 h-3" />
-              <span class="hidden md:inline">白昼</span>
-            </button>
-            <button
-              type="button"
-              @click="if (themeMode === 'light') toggleTheme();"
-              class="game-theme-switch-btn"
-              :class="{ 'is-active': themeMode === 'dark' }"
-              title="切换为暗夜侦探书房风格"
-            >
-              <Moon class="w-3 h-3" />
-              <span class="hidden md:inline">暗夜</span>
-            </button>
-          </div>
-
-          <button
-            type="button"
-            @click="handleToggleAudio"
-            class="p-1.5 rounded transition cursor-pointer text-theme-muted hover:text-theme-ink"
-            :title="isMuted ? '开启声景' : '静音'"
-          >
-            <VolumeX v-if="isMuted" class="w-4 h-4 opacity-50" />
-            <Volume2 v-else class="w-4 h-4 text-theme-accent" />
+            <Sun class="w-3.5 h-3.5" />
+            <span class="hidden sm:inline">白昼</span>
           </button>
           <button
             type="button"
-            @click="onGoHome"
-            class="p-1.5 rounded transition cursor-pointer text-theme-muted hover:text-red-500"
-            title="退出案件"
+            @click="if (themeMode === 'light') toggleTheme();"
+            class="portal-theme-switch-btn"
+            :class="{ 'is-active': themeMode === 'dark' }"
+            title="切换为暗夜侦探书房风格"
           >
-            <LogOut class="w-4 h-4" />
+            <Moon class="w-3.5 h-3.5" />
+            <span class="hidden sm:inline">暗夜</span>
           </button>
         </div>
+
+        <!-- Ambient Soundscape Toggle -->
+        <button
+          type="button"
+          @click="handleToggleAudio"
+          class="p-2 rounded-full border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-muted hover:text-theme-accent transition cursor-pointer"
+          :title="isMuted ? '开启环境声景' : '静音'"
+        >
+          <VolumeX v-if="isMuted" class="w-4 h-4 opacity-50" />
+          <Volume2 v-else class="w-4 h-4 text-theme-accent animate-pulse" />
+        </button>
+
+        <!-- User Profile Avatar Stamp -->
+        <button
+          type="button"
+          @click="openLogin"
+          class="flex items-center gap-1.5 px-2 py-1 rounded-full border border-theme-border bg-theme-surface text-theme-ink hover:border-theme-accent transition cursor-pointer shadow-xs"
+          :title="`当前侦探：${currentUser?.name || '未登录'}`"
+        >
+          <div class="w-6 h-6 rounded-full overflow-hidden border border-theme-border bg-theme-card-subtle text-theme-accent flex items-center justify-center text-xs shrink-0 font-serif font-bold">
+            {{ currentUser?.initials || '探' }}
+          </div>
+          <span class="text-xs font-bold font-serif hidden md:inline truncate max-w-20">
+            {{ currentUser?.name || '侦探' }}
+          </span>
+        </button>
+
+        <!-- Exit to Home -->
+        <button
+          type="button"
+          @click="onGoHome"
+          class="p-2 rounded-full border border-theme-border bg-theme-surface hover:bg-theme-accent/20 text-theme-muted hover:text-theme-accent transition cursor-pointer"
+          title="退出案件并返回首页"
+        >
+          <LogOut class="w-4 h-4" />
+        </button>
       </div>
     </header>
 
@@ -343,11 +378,11 @@ const onRestart = () => {
 <style scoped>
 @reference "../index.css";
 
-.game-theme-switch-btn {
-  @apply px-2 py-0.5 rounded-full flex items-center gap-1 transition text-[11px] font-serif font-bold cursor-pointer text-theme-muted hover:text-theme-ink;
+.portal-theme-switch-btn {
+  @apply px-2.5 py-1 rounded-full flex items-center gap-1.5 transition text-xs font-serif font-bold cursor-pointer text-theme-muted hover:text-theme-ink;
 }
 
-.game-theme-switch-btn.is-active {
+.portal-theme-switch-btn.is-active {
   @apply bg-theme-accent text-white shadow-xs;
 }
 </style>

@@ -98,7 +98,7 @@ const handleStartInvestigation = () => {
       </div>
 
       <!-- Main Title -->
-      <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-amber-50 tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] mb-3.5 sm:mb-4 leading-none font-serif">
+      <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-theme-ink tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] mb-3.5 sm:mb-4 leading-none font-serif">
         午夜画廊
       </h1>
 

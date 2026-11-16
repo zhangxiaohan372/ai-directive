@@ -159,7 +159,7 @@ const handleEnterStudio = () => {
                   </div>
                   <div class="p-2 rounded bg-theme-card-subtle border border-theme-border text-theme-secondary flex items-center justify-between">
                     <span class="truncate">《深海游艇：无声晚宴》</span>
-                    <span class="text-[10px] text-emerald-500 font-mono shrink-0">已收录</span>
+                    <span class="text-[10px] text-theme-ink font-mono font-bold shrink-0">已收录</span>
                   </div>
                 </div>
               </div>
@@ -244,7 +244,7 @@ const handleEnterStudio = () => {
                     <span class="step-num">03</span>
                     <span class="font-medium text-theme-ink">确定性时空与锁闭防悖论</span>
                   </div>
-                  <span class="text-[11px] text-emerald-500 font-mono">无瞬移 · 无钥匙悖论</span>
+                  <span class="text-[11px] text-theme-ink font-mono font-medium">无瞬移 · 无钥匙悖论</span>
                 </div>
 
                 <div class="workflow-step-badge">

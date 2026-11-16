@@ -330,16 +330,16 @@ const pipelineNodes = [
 ];
 
 const getNodeStatusBadgeClass = (status: string) => {
-  if (status === 'COMPLETED') return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-  if (status === 'FAILED') return 'bg-red-500/20 text-red-400 border border-red-500/30';
-  if (status === 'REPAIRING') return 'bg-amber-500/20 text-amber-400 animate-spin';
+  if (status === 'COMPLETED') return 'bg-theme-card-subtle text-theme-ink border border-theme-border font-bold';
+  if (status === 'FAILED') return 'bg-theme-card-subtle text-theme-accent border border-theme-accent/40 font-bold';
+  if (status === 'REPAIRING') return 'bg-theme-card-subtle text-theme-accent border border-theme-border animate-spin';
   return 'bg-theme-surface text-theme-muted border border-theme-border';
 };
 
 const getNodeStatusPillClass = (status: string) => {
-  if (status === 'COMPLETED') return 'bg-emerald-500/15 text-emerald-500';
-  if (status === 'RUNNING' || status === 'REPAIRING') return 'bg-amber-500/15 text-amber-500 animate-pulse';
-  if (status === 'FAILED') return 'bg-red-500/15 text-red-500';
+  if (status === 'COMPLETED') return 'bg-theme-card-subtle text-theme-ink font-bold';
+  if (status === 'RUNNING' || status === 'REPAIRING') return 'bg-theme-surface text-theme-accent animate-pulse font-bold';
+  if (status === 'FAILED') return 'bg-theme-surface text-theme-accent font-bold';
   return 'opacity-40';
 };
 </script>
@@ -443,7 +443,7 @@ const getNodeStatusPillClass = (status: string) => {
             <span
               :class="[
                 'ml-1 text-[9px] px-1 py-0.5 rounded',
-                ps.id === 'snow_manor' ? 'bg-amber-500/20 text-amber-500 font-bold' : 'opacity-60'
+                ps.id === 'snow_manor' ? 'bg-theme-card-subtle text-theme-accent border border-theme-border font-bold' : 'opacity-60'
               ]"
             >
               {{ ps.tag }}
@@ -516,9 +516,9 @@ const getNodeStatusPillClass = (status: string) => {
                     class="w-4 h-4"
                     :class="
                       pipelineState.nodeStates[node.id].status === 'COMPLETED'
-                        ? 'text-emerald-500'
+                        ? 'text-theme-ink'
                         : pipelineState.nodeStates[node.id].status === 'FAILED'
-                        ? 'text-red-500'
+                        ? 'text-theme-accent'
                         : 'text-theme-accent'
                     "
                   />
@@ -623,7 +623,7 @@ const getNodeStatusPillClass = (status: string) => {
                     已成功提取文档原始字数与四大关键实体清单
                   </p>
                 </div>
-                <span class="text-xs font-mono font-bold text-emerald-500">
+                <span class="text-xs font-mono font-bold text-theme-ink">
                   {{ pipelineState.artifacts.DOC_PARSE?.rawWordCount || pipelineState.inputScript.rawText.length }} 字符
                 </span>
               </div>
@@ -693,7 +693,7 @@ const getNodeStatusPillClass = (status: string) => {
                     :class="[
                       'p-3 rounded-xl border space-y-1.5',
                       m.severity === 'FATAL'
-                        ? 'bg-red-500/10 border-red-500/30'
+                        ? 'bg-theme-card-subtle border-theme-accent/50'
                         : 'bg-theme-card-subtle border-theme-border'
                     ]"
                   >
@@ -702,7 +702,7 @@ const getNodeStatusPillClass = (status: string) => {
                       <span
                         :class="[
                           'text-[10px] font-mono px-1.5 py-0.5 rounded font-bold',
-                          m.severity === 'FATAL' ? 'bg-red-600 text-white' : 'opacity-60 text-theme-muted'
+                          m.severity === 'FATAL' ? 'bg-theme-accent text-white shadow-xs' : 'opacity-60 text-theme-muted'
                         ]"
                       >
                         {{ m.severity }}
@@ -800,7 +800,7 @@ const getNodeStatusPillClass = (status: string) => {
                           <span class="text-[11px] text-theme-muted ml-1.5">{{ npc.title }}</span>
                         </div>
                       </div>
-                      <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                      <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-theme-card-subtle text-theme-accent border border-theme-border font-bold">
                         护栏激活
                       </span>
                     </div>
@@ -817,7 +817,7 @@ const getNodeStatusPillClass = (status: string) => {
                     </div>
 
                     <div class="space-y-1 pt-2 border-t border-theme-border">
-                      <span class="font-bold text-[11px] text-red-500 block">
+                      <span class="font-bold text-[11px] text-theme-ink block">
                         【严格禁止讨论与自辩策略】:
                       </span>
                       <div class="text-[11px] space-y-1 leading-relaxed text-theme-secondary">
@@ -841,13 +841,7 @@ const getNodeStatusPillClass = (status: string) => {
                     Game Engine 严苛审查时空重叠、物理自锁悖论与不在场证明
                   </p>
                 </div>
-                <span
-                  class="text-base font-bold font-mono"
-                  :class="{
-                    'text-emerald-500': pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid,
-                    'text-amber-500': !pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid
-                  }"
-                >
+                <span class="text-base font-bold font-mono text-theme-ink">
                   综合得分: {{ pipelineState.artifacts.LOGIC_VALIDATE?.report.score || 100 }} / 100
                 </span>
               </div>
@@ -861,24 +855,17 @@ const getNodeStatusPillClass = (status: string) => {
                     { id: '4', name: '真凶作案时间不在场矛盾检查', status: 'PASS', note: '不在场证明留有合理破绽。' },
                   ])"
                   :key="i"
-                  class="p-3 rounded-xl border flex items-center justify-between"
-                  :class="{
-                    'bg-emerald-500/10 border-emerald-500/20': chk.status === 'PASS',
-                    'bg-red-500/10 border-red-500/20': chk.status !== 'PASS'
-                  }"
+                  class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle flex items-center justify-between"
                 >
                   <div class="flex items-center gap-2.5">
-                    <CheckCircle2 v-if="chk.status === 'PASS'" class="w-4 h-4 text-emerald-500" />
-                    <AlertTriangle v-else class="w-4 h-4 text-red-500" />
+                    <CheckCircle2 v-if="chk.status === 'PASS'" class="w-4 h-4 text-theme-accent" />
+                    <AlertTriangle v-else class="w-4 h-4 text-theme-muted" />
                     <div>
                       <span class="font-bold block text-xs text-theme-ink">{{ chk.name }}</span>
                       <span class="text-[11px] text-theme-muted">{{ chk.note }}</span>
                     </div>
                   </div>
-                  <span
-                    class="font-mono font-bold text-xs"
-                    :class="{ 'text-emerald-500': chk.status === 'PASS', 'text-red-500': chk.status !== 'PASS' }"
-                  >
+                  <span class="font-mono font-bold text-xs text-theme-ink">
                     {{ chk.status }}
                   </span>
                 </div>
@@ -896,7 +883,7 @@ const getNodeStatusPillClass = (status: string) => {
                     捕获逻辑矛盾后，自动触发 Directed Cyclic Feedback Loop 注入补丁
                   </p>
                 </div>
-                <span class="text-xs font-mono font-bold text-amber-500">
+                <span class="text-xs font-mono font-bold text-theme-ink">
                   循环回环: #{{ pipelineState.artifacts.REVISION_NODE?.loopCount || 1 }}
                 </span>
               </div>
@@ -921,21 +908,21 @@ const getNodeStatusPillClass = (status: string) => {
                   class="p-3.5 rounded-xl border border-theme-border bg-theme-card-subtle space-y-2"
                 >
                   <div class="flex items-center justify-between">
-                    <span class="font-bold text-emerald-400 font-mono">
+                    <span class="font-bold text-theme-ink font-mono">
                       // {{ fix.category }}
                     </span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 font-bold px-2 py-0.5 rounded-full">
+                    <span class="text-[10px] bg-theme-card-subtle text-theme-accent border border-theme-border font-bold px-2 py-0.5 rounded-full">
                       已打补丁
                     </span>
                   </div>
                   <p class="leading-relaxed text-theme-secondary">{{ fix.description }}</p>
                   <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
-                    <div class="p-2 rounded bg-red-950/30 text-red-300 border border-red-500/20">
-                      <span class="font-bold block">修复前 (矛盾):</span>
+                    <div class="p-2 rounded bg-theme-surface text-theme-muted border border-theme-border">
+                      <span class="font-bold block text-theme-ink">修复前 (矛盾):</span>
                       <span>{{ fix.before }}</span>
                     </div>
-                    <div class="p-2 rounded bg-emerald-950/30 text-emerald-300 border border-emerald-500/20">
-                      <span class="font-bold block">修复后 (闭环):</span>
+                    <div class="p-2 rounded bg-theme-surface text-theme-ink border border-theme-border">
+                      <span class="font-bold block text-theme-accent">修复后 (闭环):</span>
                       <span>{{ fix.after }}</span>
                     </div>
                   </div>
@@ -954,7 +941,7 @@ const getNodeStatusPillClass = (status: string) => {
                     创作者签署确认：所有要素符合沉浸互动探案标准
                   </p>
                 </div>
-                <span class="text-xs font-mono font-bold text-emerald-500">
+                <span class="text-xs font-mono font-bold text-theme-ink">
                   审查就绪
                 </span>
               </div>
@@ -972,7 +959,7 @@ const getNodeStatusPillClass = (status: string) => {
                   class="p-3 rounded-xl border border-theme-border bg-theme-card-subtle flex items-center justify-between text-theme-ink"
                 >
                   <span class="font-medium">{{ item }}</span>
-                  <span class="flex items-center gap-1 text-emerald-500 font-bold text-xs">
+                  <span class="flex items-center gap-1 text-theme-accent font-bold text-xs">
                     <Check class="w-3.5 h-3.5" />
                     <span>通过</span>
                   </span>
@@ -993,8 +980,8 @@ const getNodeStatusPillClass = (status: string) => {
                 </div>
               </div>
 
-              <div class="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-center space-y-3">
-                <CheckCircle2 class="w-8 h-8 text-emerald-500 mx-auto" />
+              <div class="p-4 rounded-xl border border-theme-border bg-theme-card-subtle text-center space-y-3">
+                <CheckCircle2 class="w-8 h-8 text-theme-accent mx-auto" />
                 <div>
                   <h4 class="font-bold text-sm text-theme-ink">
                     《{{ pipelineState.generatedCase?.title || '午夜画廊：锁闭之谜' }}》发布就绪
@@ -1055,11 +1042,11 @@ const getNodeStatusPillClass = (status: string) => {
                   :class="[
                     'px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0',
                     log.level === 'SUCCESS'
-                      ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40'
+                      ? 'bg-stone-900 text-stone-200 border border-stone-700'
                       : log.level === 'WARN'
-                      ? 'bg-red-950 text-red-400 border border-red-800/40'
+                      ? 'bg-stone-900 text-theme-accent border border-stone-700'
                       : log.level === 'REPAIR'
-                      ? 'bg-amber-950 text-amber-400 border border-amber-800/40'
+                      ? 'bg-stone-900 text-stone-300 border border-stone-700'
                       : 'bg-stone-800 text-stone-300'
                   ]"
                 >
@@ -1068,11 +1055,11 @@ const getNodeStatusPillClass = (status: string) => {
                 <span
                   :class="[
                     log.level === 'SUCCESS'
-                      ? 'text-emerald-300 font-bold'
+                      ? 'text-stone-200 font-bold'
                       : log.level === 'WARN'
-                      ? 'text-red-300 font-bold'
+                      ? 'text-theme-accent font-bold'
                       : log.level === 'REPAIR'
-                      ? 'text-amber-300 font-bold'
+                      ? 'text-stone-300 font-bold'
                       : 'text-stone-300'
                   ]"
                 >
@@ -1083,7 +1070,7 @@ const getNodeStatusPillClass = (status: string) => {
 
             <div class="pt-2 border-t border-stone-800 text-[10px] text-stone-500 flex items-center justify-between">
               <span>状态机拓扑: DOC_PARSE -&gt; SCRIPT_ANALYZE -&gt; CASE_PLAN -&gt; CASE_GENERATE -&gt; LOGIC_VALIDATE -&gt; REVISION_NODE -&gt; HUMAN_REVIEW -&gt; PUBLISHED</span>
-              <span class="text-emerald-400">● 调度就绪</span>
+              <span class="text-stone-400">● 调度就绪</span>
             </div>
           </div>
         </div>
@@ -1096,12 +1083,7 @@ const getNodeStatusPillClass = (status: string) => {
             当前就绪案卷：{{ pipelineState.generatedCase?.title || '午夜画廊：锁闭之谜' }}
           </span>
           <span
-            class="px-2 py-0.5 rounded-full text-[10px] font-bold"
-            :class="
-              pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid
-                ? 'bg-emerald-500/15 text-emerald-500'
-                : 'bg-amber-500/15 text-amber-500'
-            "
+            class="px-2 py-0.5 rounded-full text-[10px] font-bold border border-theme-border bg-theme-card-subtle text-theme-ink"
           >
             {{ pipelineState.artifacts.LOGIC_VALIDATE?.report.isValid ? '规则闭环通过 (100%)' : '待校验修复' }}
           </span>

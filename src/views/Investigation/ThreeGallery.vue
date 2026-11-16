@@ -834,7 +834,7 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
           <span class="text-xs font-bold text-theme-ink">{{ hoveredRoom.name }}</span>
           <span
             v-if="hoveredRoom.isCrimeScene"
-            class="text-[10px] bg-red-950/20 text-red-500 border border-red-500/30 px-1.5 py-0.5 rounded font-bold"
+            class="text-[10px] bg-theme-accent/15 text-theme-accent border border-theme-accent/30 px-1.5 py-0.5 rounded font-bold"
           >
             案发现场
           </span>
@@ -875,7 +875,7 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
             </span>
             <span
               v-if="room.isCrimeScene"
-              class="text-[10px] bg-red-950/20 text-red-500 px-1.5 py-0.5 rounded font-bold border border-red-500/30"
+              class="text-[10px] bg-theme-accent/15 text-theme-accent px-1.5 py-0.5 rounded font-bold border border-theme-accent/30"
             >
               死者现场
             </span>
@@ -887,7 +887,7 @@ const handleSelectRoom = (roomId: RoomLocationId) => {
           <span class="text-theme-muted">
             可搜查物证: {{ room.availableClues.length }} 件
           </span>
-          <span v-if="inspectedLocations.includes(room.id)" class="text-emerald-500 font-bold">
+          <span v-if="inspectedLocations.includes(room.id)" class="text-theme-ink font-bold">
             已勘验完成
           </span>
           <span v-else class="text-theme-accent font-bold">

@@ -52,7 +52,7 @@ interface NarrativeBeat {
   id: string;
   stage: string;
   title: string;
-  color: string;
+  color?: string;
 }
 
 const SAMPLE_SCRIPTS: Record<string, { title: string; filename: string; text: string; trick: string }> = {
@@ -119,10 +119,10 @@ const uploadedFileSize = ref(4820);
 const scriptText = ref(SAMPLE_SCRIPTS.midnight_gallery.text);
 
 const narrativeBeats = ref<NarrativeBeat[]>([
-  { id: '1', stage: '展开', title: '艺术展开幕酒会与名画《夜巡者》亮相', color: '#8B3A2B' },
-  { id: '2', stage: '突发', title: '22:35 文物修复室反锁与陈默受害被发现', color: '#C9942D' },
-  { id: '3', stage: '调查', title: '停摆怀表与松节油抹布揭示物理不在场伪证', color: '#38BDF8' },
-  { id: '4', stage: '对质', title: '对徐宁总控备用门禁卡记录提起终极指控', color: '#10B981' },
+  { id: '1', stage: '展开', title: '艺术展开幕酒会与名画《夜巡者》亮相' },
+  { id: '2', stage: '突发', title: '22:35 文物修复室反锁与陈默受害被发现' },
+  { id: '3', stage: '调查', title: '停摆怀表与松节油抹布揭示物理不在场伪证' },
+  { id: '4', stage: '对质', title: '对徐宁总控备用门禁卡记录提起终极指控' },
 ]);
 
 const terminalLogs = ref<string[]>([
@@ -239,7 +239,6 @@ const handleAddBeat = () => {
     id: String(Date.now()),
     stage: randomStage,
     title: '新发现的物证',
-    color: isDark.value ? '#DFB36C' : '#8B3A2B',
   };
   narrativeBeats.value.push(newBeat);
 };
@@ -497,7 +496,7 @@ const handleSimulateScriptIngest = () => {
 
             <!-- Auto-save Status -->
             <div class="flex items-center gap-1.5 text-xs font-serif text-theme-muted">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span class="w-2 h-2 rounded-full bg-theme-accent animate-pulse" />
               <span>{{ saveToast ? '已保存更改' : '已自动保存' }}</span>
             </div>
           </div>
@@ -627,8 +626,7 @@ const handleSimulateScriptIngest = () => {
               >
                 <div class="flex items-center justify-between">
                   <span
-                    class="text-[10px] px-2 py-0.5 rounded-full font-bold text-white font-mono"
-                    :style="{ backgroundColor: beat.color }"
+                    class="text-[10px] px-2 py-0.5 rounded-md font-serif font-bold border border-theme-border bg-theme-card-subtle text-theme-accent"
                   >
                     {{ beat.stage }}
                   </span>
@@ -674,7 +672,7 @@ const handleSimulateScriptIngest = () => {
                         <span class="font-bold text-sm text-theme-ink">{{ s.name }}</span>
                         <span
                           v-if="s.id === currentCase.trueCulpritId"
-                          class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-500 font-mono font-bold"
+                          class="text-[10px] px-2 py-0.5 rounded-full bg-theme-accent text-white font-mono font-bold shadow-xs"
                         >
                           真实凶手
                         </span>
@@ -685,8 +683,8 @@ const handleSimulateScriptIngest = () => {
                 </div>
 
                 <div class="text-xs space-y-1.5 leading-relaxed text-theme-secondary">
-                  <div><strong class="text-amber-500">动机：</strong>{{ s.motiveSummary }}</div>
-                  <div><strong class="text-sky-500">不在场证明：</strong>{{ s.alibi }}</div>
+                  <div><strong class="text-theme-ink">动机：</strong>{{ s.motiveSummary }}</div>
+                  <div><strong class="text-theme-secondary">不在场证明：</strong>{{ s.alibi }}</div>
                 </div>
               </div>
             </div>
@@ -700,7 +698,7 @@ const handleSimulateScriptIngest = () => {
                     NPC 防剧透护栏沙盒测试 (Boundary Guard Simulation)
                   </h4>
                 </div>
-                <span class="text-[10px] font-mono text-emerald-500 font-bold">
+                <span class="text-[10px] font-mono text-theme-accent font-bold">
                   ● 护栏监控中
                 </span>
               </div>
@@ -740,7 +738,7 @@ const handleSimulateScriptIngest = () => {
               <!-- Output response -->
               <div
                 v-if="testResponse"
-                class="p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-emerald-400 text-xs leading-relaxed whitespace-pre-line animate-fadeIn font-mono"
+                class="p-3.5 rounded-xl border border-theme-border bg-theme-surface text-theme-ink text-xs leading-relaxed whitespace-pre-line animate-fadeIn font-mono"
               >
                 {{ testResponse }}
               </div>
@@ -766,7 +764,7 @@ const handleSimulateScriptIngest = () => {
                     <Compass class="w-4 h-4 text-theme-accent" />
                     <span>{{ loc.name }}</span>
                   </span>
-                  <span v-if="loc.isCrimeScene" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-500 font-bold">
+                  <span v-if="loc.isCrimeScene" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-theme-accent/15 text-theme-accent border border-theme-accent/30 font-bold">
                     案发现场
                   </span>
                 </div>
@@ -799,7 +797,7 @@ const handleSimulateScriptIngest = () => {
                   </span>
                   <span
                     v-if="clue.isCrucial"
-                    class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/20 text-red-500 font-bold"
+                    class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-theme-accent text-white font-bold shadow-xs"
                   >
                     关键铁证
                   </span>
@@ -1068,15 +1066,15 @@ const handleSimulateScriptIngest = () => {
 }
 
 .studio-badge-status {
-  @apply font-mono px-2 py-0.5 rounded font-bold;
+  @apply font-mono px-2 py-0.5 rounded font-bold border border-theme-border;
 }
 
 .studio-badge-status.is-valid {
-  @apply bg-emerald-500/15 text-emerald-500;
+  @apply bg-theme-card-subtle text-theme-ink;
 }
 
 .studio-badge-status.is-warning {
-  @apply bg-amber-500/15 text-amber-500;
+  @apply bg-theme-card-subtle text-theme-accent border-theme-accent/40;
 }
 
 .studio-suspect-card {
@@ -1092,7 +1090,7 @@ const handleSimulateScriptIngest = () => {
 }
 
 .studio-location-card.is-crime-scene {
-  @apply bg-red-950/15 border-red-500/30;
+  @apply bg-theme-card-subtle border-theme-accent/40;
 }
 
 .studio-clue-card {

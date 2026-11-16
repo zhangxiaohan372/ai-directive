@@ -300,27 +300,27 @@ const handleScrollToCases = () => {
             </span>
           </h2>
 
-          <p class="text-sm sm:text-base md:text-lg font-serif leading-relaxed text-theme-secondary">
+          <p class="text-sm sm:text-base md:text-lg font-serif leading-relaxed text-theme-secondary font-medium max-w-xl">
             上传剧本，AI 为你生成完整案件，开启沉浸式的推理之旅
           </p>
 
-          <!-- CTA Buttons -->
+          <!-- Tactile Dossier Buttons (AI Cinnabar Wax Seal & Kraft Ticket) -->
           <div class="flex flex-wrap items-center gap-4 pt-2">
             <button
               type="button"
               @click="sound.playPaperRustle(); emit('openStudio');"
-              class="flex items-center gap-2.5 px-6 py-3.5 rounded-full font-serif font-black text-sm tracking-wide bg-theme-accent hover:bg-theme-accent-hover text-white shadow-xl cursor-pointer active:scale-95 transition-all"
+              class="dossier-hero-btn-primary group"
             >
-              <Play class="w-4 h-4 fill-current" />
-              <span>开始创作 →</span>
+              <Play class="w-4 h-4 fill-current transition-transform duration-150 group-hover:scale-110" />
+              <span>开始创作</span>
             </button>
 
             <button
               type="button"
               @click="handleScrollToCases"
-              class="flex items-center gap-2 px-6 py-3.5 rounded-full font-serif font-medium text-sm border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-ink transition-all cursor-pointer shadow-md"
+              class="dossier-hero-btn-secondary group"
             >
-              <Compass class="w-4 h-4 text-theme-accent" />
+              <Compass class="w-4 h-4 text-theme-accent transition-transform duration-150 group-hover:rotate-45" />
               <span>探索案例</span>
             </button>
           </div>
@@ -328,64 +328,28 @@ const handleScrollToCases = () => {
       </div>
     </section>
 
-    <!-- 3. FOUR FEATURE PILLARS BAR -->
-    <section class="relative z-20 max-w-7xl mx-auto px-6 sm:px-10 -mt-10 sm:-mt-12 w-full">
-      <div class="rounded-2xl border border-theme-border bg-theme-surface/95 backdrop-blur-md p-5 sm:p-6 shadow-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 divide-y sm:divide-y-0 sm:divide-x divide-theme-border transition-colors duration-300">
-        <div class="feature-pillar-box">
-          <div class="feature-pillar-icon">
-            <FileText class="w-6 h-6" />
-          </div>
-          <div>
-            <h3 class="font-serif font-bold text-sm text-theme-ink">
-              多格式支持
-            </h3>
-            <p class="text-xs font-serif mt-0.5 text-theme-muted">
-              支持 PDF / Word / Markdown
-            </p>
-          </div>
-        </div>
-
-        <div class="feature-pillar-box">
-          <div class="feature-pillar-icon">
-            <GitGraph class="w-6 h-6" />
-          </div>
-          <div>
-            <h3 class="font-serif font-bold text-sm text-theme-ink">
-              智能创作
-            </h3>
-            <p class="text-xs font-serif mt-0.5 text-theme-muted">
-              基于 LangGraph 的工作流
-            </p>
-          </div>
-        </div>
-
-        <div class="feature-pillar-box">
-          <div class="feature-pillar-icon">
-            <Gamepad2 class="w-6 h-6" />
-          </div>
-          <div>
-            <h3 class="font-serif font-bold text-sm text-theme-ink">
-              沉浸推理
-            </h3>
-            <p class="text-xs font-serif mt-0.5 text-theme-muted">
-              与 AI NPC 展开互动
-            </p>
-          </div>
-        </div>
-
-        <div class="feature-pillar-box">
-          <div class="feature-pillar-icon">
-            <ShieldCheck class="w-6 h-6 text-emerald-500" />
-          </div>
-          <div>
-            <h3 class="font-serif font-bold text-sm text-theme-ink">
-              逻辑严谨
-            </h3>
-            <p class="text-xs font-serif mt-0.5 text-theme-muted">
-              多重校验，保证可玩性
-            </p>
-          </div>
-        </div>
+    <!-- 3. REFINED DOSSIER AMBIENT STRIP (Truly 1 aligned line, no white card, no icon boxes) -->
+    <section class="max-w-7xl mx-auto px-6 sm:px-10 py-5 w-full text-center">
+      <div class="inline-flex items-center justify-center flex-wrap gap-x-6 sm:gap-x-8 gap-y-2 text-xs font-serif text-theme-muted tracking-widest">
+        <span class="flex items-center gap-1.5 text-theme-secondary font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-theme-accent" />
+          <span>多格式剧本解析</span>
+        </span>
+        <span class="text-theme-border hidden sm:inline">·</span>
+        <span class="flex items-center gap-1.5 text-theme-secondary font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-theme-accent" />
+          <span>案卷脉络推演</span>
+        </span>
+        <span class="text-theme-border hidden sm:inline">·</span>
+        <span class="flex items-center gap-1.5 text-theme-secondary font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-theme-accent" />
+          <span>3D 现场勘查</span>
+        </span>
+        <span class="text-theme-border hidden sm:inline">·</span>
+        <span class="flex items-center gap-1.5 text-theme-secondary font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-theme-accent" />
+          <span>逻辑闭环验证</span>
+        </span>
       </div>
     </section>
 
@@ -422,28 +386,29 @@ const handleScrollToCases = () => {
           @click="handleCaseCardClick(caseItem)"
           class="case-card group"
         >
-          <div class="relative h-44 w-full overflow-hidden">
+          <div class="relative h-44 w-full overflow-hidden bg-theme-card-subtle">
             <img
               :src="caseItem.image"
               :alt="caseItem.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            <div class="absolute inset-0 bg-linear-to-t from-theme-card via-transparent to-transparent" />
+            <div class="absolute inset-0 bg-linear-to-t from-theme-surface via-transparent to-transparent opacity-80" />
 
-            <div class="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full border border-theme-border bg-theme-surface/90 text-theme-accent text-[11px] font-mono shadow-md backdrop-blur-md">
-              <Flame class="w-3 h-3 text-amber-500 fill-current" />
-              <span>热度 {{ caseItem.heat }}</span>
+            <!-- Heat: understated text badge -->
+            <div class="absolute bottom-2 left-3 text-[11px] font-serif text-theme-muted bg-theme-surface/85 backdrop-blur-xs px-2 py-0.5 rounded border border-theme-border/60">
+              案卷热度 · {{ caseItem.heat }}
             </div>
 
+            <!-- Playable status: plain text badge, NO neon green -->
             <div
               v-if="caseItem.isPlayable"
-              class="absolute top-3 right-3 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-[10px] font-mono"
+              class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[11px] font-serif border border-theme-border bg-theme-surface/90 text-theme-accent shadow-xs"
             >
-              可立即探案
+              可调阅探案
             </div>
           </div>
 
-          <div class="p-4 pt-1 flex flex-col justify-between flex-1">
+          <div class="p-4 pt-2 flex flex-col justify-between flex-1">
             <div>
               <h3 class="font-serif font-bold text-sm sm:text-base text-theme-ink group-hover:text-theme-accent transition-colors mb-2 truncate">
                 {{ caseItem.title }}
@@ -464,8 +429,8 @@ const handleScrollToCases = () => {
               <span class="text-[11px] font-serif text-theme-muted">
                 {{ caseItem.statusText }}
               </span>
-              <div class="w-7 h-7 rounded-full border border-theme-border bg-theme-surface text-theme-muted group-hover:bg-theme-accent group-hover:border-theme-accent group-hover:text-white flex items-center justify-center transition-all">
-                <ChevronRight class="w-4 h-4 stroke-2" />
+              <div class="w-6 h-6 rounded-md border border-theme-border bg-theme-card-subtle text-theme-muted group-hover:bg-theme-accent group-hover:border-theme-accent group-hover:text-white flex items-center justify-center transition-all">
+                <ChevronRight class="w-3.5 h-3.5 stroke-2" />
               </div>
             </div>
           </div>
@@ -502,7 +467,7 @@ const handleScrollToCases = () => {
             class="w-full h-full object-cover"
           />
           <div class="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 text-white text-xs font-mono">
-            <Flame class="w-3 h-3 text-amber-500 fill-current" />
+            <Flame class="w-3 h-3 text-theme-accent fill-current" />
             <span>热度 {{ selectedCaseModal.heat }}</span>
           </div>
         </div>
@@ -559,12 +524,12 @@ const handleScrollToCases = () => {
       <div class="flex items-center gap-3">
         <span>AI Detective · 智能探案平台</span>
         <span>•</span>
-        <span class="font-mono text-[11px]">LangGraph Multi-Agent Architecture</span>
+        <span class="text-[11px]">案卷脉络自主演绎</span>
         <span>•</span>
-        <span class="font-mono text-[11px]">Deterministic State Engine</span>
+        <span class="text-[11px]">确定性规则验证引擎</span>
       </div>
-      <div class="font-mono text-[11px] opacity-75">
-        Ready for Multi-Case Investigation & AI Authorship
+      <div class="text-[11px] opacity-75">
+        同一张侦探书桌 · 白昼与暗夜沉浸推演
       </div>
     </footer>
   </div>
@@ -605,7 +570,7 @@ const handleScrollToCases = () => {
 }
 
 .portal-sim-btn {
-  @apply flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-red-500/30 bg-red-950/15 text-red-500 hover:bg-red-950/25 text-xs font-mono transition cursor-pointer active:scale-95 shadow-xs;
+  @apply flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-theme-accent/30 bg-theme-accent/15 text-theme-accent hover:bg-theme-accent/25 text-xs font-mono transition cursor-pointer active:scale-95 shadow-xs;
 }
 
 .portal-profile-btn {
@@ -613,30 +578,83 @@ const handleScrollToCases = () => {
 }
 
 .portal-modal-primary-btn {
-  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs bg-theme-accent hover:bg-theme-accent-hover text-white shadow-lg cursor-pointer active:scale-95 transition-all;
+  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-[10px] font-serif font-bold text-xs bg-theme-accent hover:bg-theme-accent-hover text-white shadow-[0_3px_0_var(--color-accent-hover)] active:translate-y-[3px] active:shadow-none cursor-pointer transition-all;
 }
 
 .portal-modal-secondary-btn {
-  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-serif font-bold text-xs border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-accent cursor-pointer transition-all;
+  @apply w-full sm:flex-1 flex items-center justify-center gap-2 py-3 rounded-[10px] font-serif font-bold text-xs border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-accent cursor-pointer transition-all;
 }
 
 .portal-modal-aux-btn {
-  @apply w-full sm:w-auto px-4 py-3 rounded-xl border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-secondary hover:text-theme-ink text-xs font-serif cursor-pointer transition-colors flex items-center justify-center gap-1.5;
-}
-
-.feature-pillar-box {
-  @apply flex items-center gap-4 pt-3 sm:pt-0 sm:px-3;
-}
-
-.feature-pillar-icon {
-  @apply w-12 h-12 rounded-xl border border-theme-border bg-theme-card-subtle flex items-center justify-center shrink-0 text-theme-accent;
+  @apply w-full sm:w-auto px-4 py-3 rounded-[10px] border border-theme-border bg-theme-surface hover:bg-theme-card-subtle text-theme-secondary hover:text-theme-ink text-xs font-serif cursor-pointer transition-colors flex items-center justify-center gap-1.5;
 }
 
 .case-card {
-  @apply relative rounded-2xl overflow-hidden border border-theme-border bg-theme-card hover:border-theme-accent/60 transition-all duration-300 shadow-xl flex flex-col justify-between cursor-pointer;
+  @apply relative rounded-xl overflow-hidden border border-theme-border bg-theme-surface hover:border-theme-accent/60 transition-all duration-300 shadow-sm flex flex-col justify-between cursor-pointer;
 }
 
 .tag-pill {
   @apply px-2 py-0.5 rounded text-[10px] font-serif bg-theme-card-subtle border border-theme-border text-theme-muted;
+}
+
+/* ── 案卷复古材质按钮 (Tactile Dossier Stamped & Kraft Buttons) ── */
+.dossier-hero-btn-primary {
+  @apply relative inline-flex items-center justify-center gap-2.5 px-8 h-12 font-serif font-bold text-sm tracking-[0.18em] cursor-pointer select-none transition-all duration-150;
+  background-image: url('../../assets/images/btn_cinnabar_seal.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #FFF5EA;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+  filter: drop-shadow(0 4px 6px rgba(45, 16, 10, 0.35));
+}
+
+.dossier-hero-btn-primary:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 6px 14px rgba(45, 16, 10, 0.45)) brightness(1.08);
+}
+
+.dossier-hero-btn-primary:active {
+  transform: translateY(2px);
+  filter: drop-shadow(0 1px 2px rgba(45, 16, 10, 0.4)) brightness(0.96);
+}
+
+:global([data-theme="dark"]) .dossier-hero-btn-primary,
+:global(.dark) .dossier-hero-btn-primary {
+  background-image: url('../../assets/images/btn_brass_seal.png');
+  color: #1A1208;
+  text-shadow: 0 1px 1px rgba(255, 240, 200, 0.55);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.75));
+}
+
+:global([data-theme="dark"]) .dossier-hero-btn-primary:hover,
+:global(.dark) .dossier-hero-btn-primary:hover {
+  filter: drop-shadow(0 6px 16px rgba(201, 148, 45, 0.35)) brightness(1.12);
+}
+
+.dossier-hero-btn-secondary {
+  @apply relative inline-flex items-center justify-center gap-2 px-7 h-12 font-serif font-bold text-sm tracking-wider cursor-pointer select-none transition-all duration-150;
+  background-image: url('../../assets/images/btn_paper_label.png');
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #38281B;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  filter: drop-shadow(0 3px 6px rgba(45, 30, 15, 0.16));
+}
+
+.dossier-hero-btn-secondary:hover {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 5px 12px rgba(45, 30, 15, 0.24)) brightness(1.04);
+}
+
+.dossier-hero-btn-secondary:active {
+  transform: translateY(2px);
+  filter: drop-shadow(0 1px 2px rgba(45, 30, 15, 0.2)) brightness(0.96);
+}
+
+:global([data-theme="dark"]) .dossier-hero-btn-secondary,
+:global(.dark) .dossier-hero-btn-secondary {
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.65)) contrast(0.95) brightness(0.92);
 }
 </style>

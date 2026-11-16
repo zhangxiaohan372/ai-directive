@@ -62,17 +62,17 @@ const rigorResult = computed(() =>
   evaluateInferenceRigor(props.caseData)
 );
 
-// SVG geometry color tokens
+// SVG geometry color tokens - unified Detective dossier kraft & ink palette
 const colors = computed(() => ({
-  crucial: props.isDark ? '#EF4444' : '#DC2626',
-  motive: props.isDark ? '#C084FC' : '#9333EA',
-  circumstantial: props.isDark ? '#38BDF8' : '#0284C7',
-  exculpatory: props.isDark ? '#34D399' : '#059669',
+  crucial: props.isDark ? '#DFB36C' : '#8B3A2B',
+  motive: props.isDark ? '#C8BEB5' : '#5A4636',
+  circumstantial: props.isDark ? '#A89073' : '#8C7E72',
+  exculpatory: props.isDark ? '#6E5F52' : '#B5A593',
   gold: props.isDark ? '#DFB36C' : '#8B3A2B',
-  grid: props.isDark ? '#261D15' : '#E8DFD5',
+  grid: props.isDark ? '#3B3027' : '#E8DFD5',
   text: props.isDark ? '#A89073' : '#6E5F52',
-  tooltipBg: props.isDark ? '#1C150F' : '#FFFFFF',
-  tooltipBorder: props.isDark ? '#3E2E1E' : '#E2D8CC',
+  tooltipBg: props.isDark ? '#181411' : '#FAF7F2',
+  tooltipBorder: props.isDark ? '#3B3027' : '#E8DFD5',
 }));
 
 // SVG Radar computation helpers
@@ -156,16 +156,9 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <div class="space-y-2 max-w-2xl">
           <div class="flex items-center gap-3">
             <span
-              :class="[
-                'px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase border flex items-center gap-1.5',
-                rigorResult.verdict === 'RATIONALLY_SEALED'
-                  ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
-                  : rigorResult.verdict === 'WARNING_AMBIGUITY'
-                  ? 'bg-amber-500/15 text-amber-500 border-amber-500/30'
-                  : 'bg-rose-500/15 text-rose-500 border-rose-500/30'
-              ]"
+              class="px-3 py-1 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-theme-border bg-theme-surface text-theme-accent flex items-center gap-1.5 shadow-xs"
             >
-              <Scale class="w-3.5 h-3.5" />
+              <Scale class="w-3.5 h-3.5 text-theme-accent" />
               <span>{{ rigorResult.verdictTitle }}</span>
             </span>
             <span class="text-xs font-mono text-theme-muted">
@@ -187,14 +180,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
             <div class="text-[11px] font-mono uppercase tracking-wider text-theme-muted">
               严密性评分
             </div>
-            <div
-              :class="[
-                'text-3xl font-serif font-black',
-                rigorResult.overallRigorScore >= 85
-                  ? 'text-theme-accent'
-                  : 'text-amber-500'
-              ]"
-            >
+            <div class="text-3xl font-serif font-black text-theme-accent">
               {{ rigorResult.overallRigorScore }}
               <span class="text-xs font-sans font-normal opacity-60"> / 100</span>
             </div>
@@ -219,7 +205,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-dashed border-theme-border">
         <div class="flex flex-col">
           <span class="text-[11px] text-theme-muted">定罪领先差 (Margin)</span>
-          <span class="text-sm font-bold font-mono text-emerald-500">
+          <span class="text-sm font-bold font-mono text-theme-ink">
             +{{ rigorResult.convictionMargin }}%
           </span>
         </div>
@@ -231,25 +217,13 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         </div>
         <div class="flex flex-col">
           <span class="text-[11px] text-theme-muted">无辜者误判防线</span>
-          <span
-            class="text-sm font-bold font-mono"
-            :class="{
-              'text-emerald-500': rigorResult.innocentSafeguarded,
-              'text-amber-500': !rigorResult.innocentSafeguarded
-            }"
-          >
+          <span class="text-sm font-bold font-mono text-theme-accent">
             {{ rigorResult.innocentSafeguarded ? '全员脱罪保护' : '存在误判风险' }}
           </span>
         </div>
         <div class="flex flex-col">
           <span class="text-[11px] text-theme-muted">密室物理自洽度</span>
-          <span
-            class="text-sm font-bold font-mono"
-            :class="{
-              'text-emerald-500': !caseData.validationReport || caseData.validationReport.isValid,
-              'text-rose-500': caseData.validationReport && !caseData.validationReport.isValid
-            }"
-          >
+          <span class="text-sm font-bold font-mono text-theme-ink">
             {{ (!caseData.validationReport || caseData.validationReport.isValid) ? '100% 零冲突' : '有物理冲突' }}
           </span>
         </div>
@@ -298,7 +272,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 <Target class="w-4 h-4 text-theme-accent" />
                 <span>各嫌疑人证据关联强度分布 (Evidence Distribution)</span>
               </h3>
-              <span class="text-[11px] font-mono text-emerald-500">
+              <span class="text-[11px] font-mono text-theme-muted">
                 定罪门槛: 80分
               </span>
             </div>
@@ -423,12 +397,12 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 <span>{{ profiles[hoveredBarIndex].name }} ({{ profiles[hoveredBarIndex].title }})</span>
                 <span
                   v-if="profiles[hoveredBarIndex].isTrueCulprit"
-                  class="px-1.5 py-0.5 rounded text-[10px] bg-red-500/20 text-red-400 font-mono"
+                  class="px-1.5 py-0.5 rounded text-[10px] bg-theme-accent text-white font-mono font-bold shadow-xs"
                 >
                   真实凶手
                 </span>
               </div>
-              <div class="text-[11px] font-mono text-emerald-500">
+              <div class="text-[11px] font-mono text-theme-ink font-bold">
                 综合定罪判定: {{ profiles[hoveredBarIndex].totalInculpationScore }}分 · {{ profiles[hoveredBarIndex].statusLabel }}
               </div>
               <div class="border-t border-theme-border pt-1 space-y-0.5 text-theme-secondary">
@@ -525,27 +499,28 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               </text>
 
               <!-- Polygons -->
-              <!-- Innocent 2 (林岚 - Rose) -->
+              <!-- Innocent 2 (林岚 - Muted Kraft Tan) -->
               <polygon
                 v-if="caseData.suspects[2]"
                 :points="getSuspectPolygon(caseData.suspects[2].name)"
-                fill="#FB7185"
+                :fill="colors.circumstantial"
                 fill-opacity="0.2"
-                stroke="#FB7185"
+                :stroke="colors.circumstantial"
                 stroke-width="1.5"
+                stroke-dasharray="3 3"
               />
 
-              <!-- Innocent 1 (周衡 - Sky) -->
+              <!-- Innocent 1 (周衡 - Deep Warm Ink) -->
               <polygon
                 v-if="caseData.suspects[1]"
                 :points="getSuspectPolygon(caseData.suspects[1].name)"
-                fill="#38BDF8"
-                fill-opacity="0.2"
-                stroke="#38BDF8"
+                :fill="colors.motive"
+                fill-opacity="0.22"
+                :stroke="colors.motive"
                 stroke-width="1.5"
               />
 
-              <!-- Culprit (许宁 - Gold / Crimson) -->
+              <!-- Culprit (许宁 - Antique Gold / Cinnabar) -->
               <polygon
                 v-if="caseData.suspects[0]"
                 :points="getSuspectPolygon(caseData.suspects[0].name)"
@@ -563,11 +538,11 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 <span>许宁 (真凶)</span>
               </span>
               <span class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#38BDF8]"></span>
+                <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: colors.motive }"></span>
                 <span>周衡 (投资人)</span>
               </span>
               <span class="flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#FB7185]"></span>
+                <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: colors.circumstantial }"></span>
                 <span>林岚 (画家)</span>
               </span>
             </div>
@@ -584,9 +559,9 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         >
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <CheckCircle2 v-if="cp.status === 'PASS'" class="w-4 h-4 text-emerald-500 shrink-0" />
-              <AlertTriangle v-else-if="cp.status === 'WARN'" class="w-4 h-4 text-amber-500 shrink-0" />
-              <XCircle v-else class="w-4 h-4 text-rose-500 shrink-0" />
+              <CheckCircle2 v-if="cp.status === 'PASS'" class="w-4 h-4 text-theme-accent shrink-0" />
+              <AlertTriangle v-else-if="cp.status === 'WARN'" class="w-4 h-4 text-theme-muted shrink-0" />
+              <XCircle v-else class="w-4 h-4 text-theme-accent shrink-0" />
               <h4 class="text-xs font-serif font-bold text-theme-ink">
                 {{ cp.label }}
               </h4>
@@ -597,14 +572,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
           </div>
 
           <span
-            :class="[
-              'text-xs font-mono font-bold px-2 py-1 rounded shrink-0',
-              cp.status === 'PASS'
-                ? 'bg-emerald-500/10 text-emerald-500'
-                : cp.status === 'WARN'
-                ? 'bg-amber-500/10 text-amber-500'
-                : 'bg-rose-500/10 text-rose-500'
-            ]"
+            class="text-xs font-mono font-bold px-2 py-0.5 rounded shrink-0 border border-theme-border bg-theme-surface text-theme-ink"
           >
             {{ cp.value }}
           </span>
@@ -661,7 +629,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                 class="hover:bg-theme-card-subtle transition-colors"
               >
                 <td class="p-2.5 font-serif font-medium flex items-center gap-2 text-theme-ink">
-                  <span v-if="clue.isCrucial" class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" title="核心关键物证" />
+                  <span v-if="clue.isCrucial" class="w-1.5 h-1.5 rounded-full bg-theme-accent shrink-0" title="核心关键物证" />
                   <span>{{ clue.name }}</span>
                 </td>
                 <td class="p-2.5 text-theme-muted font-mono text-[11px]">
@@ -681,18 +649,12 @@ const handleRunSimulatedTrial = (suspectId: string) => {
                   >
                     <span
                       :class="[
-                        'inline-block px-2 py-1 rounded text-[11px] font-mono font-bold',
+                        'inline-block px-2 py-1 rounded text-[11px] font-mono font-bold transition',
                         correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.linkType === 'DIRECT_WEAPON'
-                          ? 'bg-red-500/20 text-red-400'
-                          : correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.linkType === 'TIMING_KEY'
-                          ? 'bg-amber-500/20 text-amber-400'
-                          : correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.linkType === 'MOTIVE_PAPER'
-                          ? 'bg-purple-500/20 text-purple-400'
-                          : correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.linkType === 'FRAME_UP'
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.linkType === 'ALIBI_BREAK'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'opacity-30'
+                          ? 'bg-theme-accent text-white shadow-xs'
+                          : (correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.strength ?? 0) >= 50
+                          ? 'bg-theme-card-subtle border border-theme-border text-theme-ink'
+                          : 'text-theme-muted opacity-60'
                       ]"
                     >
                       {{ correlationMatrix.find((m) => m.clueId === clue.id && m.suspectId === suspect.id)?.strength }}%
@@ -715,16 +677,7 @@ const handleRunSimulatedTrial = (suspectId: string) => {
               <span class="font-serif font-bold text-sm text-theme-ink">
                 {{ selectedCell.clueName }} ↔ {{ selectedCell.suspectName }}
               </span>
-              <span
-                :class="[
-                  'text-[10px] font-mono px-2 py-0.5 rounded font-bold',
-                  selectedCell.linkType === 'DIRECT_WEAPON'
-                    ? 'bg-red-500/20 text-red-400'
-                    : selectedCell.linkType === 'TIMING_KEY'
-                    ? 'bg-amber-500/20 text-amber-400'
-                    : 'bg-theme-surface text-theme-muted border border-theme-border'
-                ]"
-              >
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold bg-theme-surface text-theme-accent border border-theme-border">
                 {{ selectedCell.linkType }} ({{ selectedCell.strength }}%)
               </span>
             </div>
@@ -799,17 +752,12 @@ const handleRunSimulatedTrial = (suspectId: string) => {
         <!-- Trial Result Panel -->
         <div
           v-if="trialResult"
-          :class="[
-            'mt-6 p-5 rounded-2xl border animate-fadeIn space-y-3',
-            trialResult.verdict === 'CONVICTED'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-theme-ink'
-              : 'bg-amber-500/10 border-amber-500/30 text-theme-ink'
-          ]"
+          class="mt-6 p-5 rounded-2xl border border-theme-border bg-theme-card-subtle animate-fadeIn space-y-3"
         >
           <div class="flex items-center gap-2">
-            <CheckCircle2 v-if="trialResult.verdict === 'CONVICTED'" class="w-5 h-5 text-emerald-500 shrink-0" />
-            <AlertTriangle v-else class="w-5 h-5 text-amber-500 shrink-0" />
-            <h4 class="font-serif font-bold text-sm tracking-wide">
+            <CheckCircle2 v-if="trialResult.verdict === 'CONVICTED'" class="w-5 h-5 text-theme-accent shrink-0" />
+            <AlertTriangle v-else class="w-5 h-5 text-theme-muted shrink-0" />
+            <h4 class="font-serif font-bold text-sm tracking-wide text-theme-ink">
               {{ trialResult.title }}
             </h4>
           </div>

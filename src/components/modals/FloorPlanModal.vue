@@ -202,7 +202,7 @@ const handleRoomClick = (room: RoomSpatialData) => {
               currentSceneId === room.id
                 ? 'border-theme-accent bg-theme-accent/20 ring-2 ring-theme-accent/60 shadow-lg'
                 : hoveredRoomId === room.id
-                ? 'border-amber-400/90 bg-amber-500/15 ring-2 ring-amber-400/40 shadow-md'
+                ? 'border-theme-accent bg-theme-accent/15 ring-2 ring-theme-accent/40 shadow-md'
                 : 'border-white/20 hover:border-white/50 bg-black/25'
             ]"
           >
@@ -218,7 +218,7 @@ const handleRoomClick = (room: RoomSpatialData) => {
                 </span>
                 <span
                   v-if="room.isCrimeScene"
-                  class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-red-900/90 text-red-200 border border-red-500/60 animate-pulse shadow-xs"
+                  class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-theme-accent text-white border border-theme-border animate-pulse shadow-xs"
                 >
                   凶案第一现场
                 </span>
@@ -232,7 +232,7 @@ const handleRoomClick = (room: RoomSpatialData) => {
 
             <!-- Room Center Name & Role Badge -->
             <div class="my-auto text-left drop-shadow-md">
-              <h4 class="text-sm sm:text-base font-bold text-white tracking-wide group-hover:text-amber-200 transition-colors">
+              <h4 class="text-sm sm:text-base font-bold text-white tracking-wide group-hover:text-theme-accent transition-colors">
                 {{ room.title }}
               </h4>
               <p class="text-[10px] font-mono text-stone-300 tracking-wider">
@@ -246,7 +246,7 @@ const handleRoomClick = (room: RoomSpatialData) => {
                 <span class="w-2 h-2 rounded-full ring-1 ring-white/40" :style="{ backgroundColor: room.avatarColor }" />
                 <span class="font-medium truncate max-w-[80px]">{{ room.npcName }} ({{ room.npcRole }})</span>
               </div>
-              <span class="text-amber-300 opacity-0 group-hover:opacity-100 transition-opacity flex items-center font-mono">
+              <span class="text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity flex items-center font-mono">
                 穿梭进入 <ArrowRight class="w-3 h-3 ml-0.5" />
               </span>
             </div>

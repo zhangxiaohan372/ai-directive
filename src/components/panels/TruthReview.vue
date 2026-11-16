@@ -59,7 +59,7 @@ const missedClues = computed(() => CLUES.filter(
         <div class="flex items-center space-x-5 text-left">
           <div
             class="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border border-theme-border shadow-md"
-            :class="verdict.isSolved ? 'bg-amber-500/20 text-amber-500' : 'bg-red-500/20 text-red-500'"
+            :class="verdict.isSolved ? 'bg-theme-accent text-white shadow-xs' : 'bg-theme-card-subtle text-theme-muted'"
           >
             <Award v-if="verdict.isSolved" class="w-8 h-8" />
             <AlertTriangle v-else class="w-8 h-8" />
@@ -68,7 +68,7 @@ const missedClues = computed(() => CLUES.filter(
             <div class="flex items-center space-x-2.5 mb-1">
               <span
                 class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold tracking-wider uppercase border border-theme-border"
-                :class="verdict.isSolved ? 'bg-amber-500/10 text-amber-500' : 'bg-red-500/10 text-red-500'"
+                :class="verdict.isSolved ? 'bg-theme-accent/15 text-theme-accent' : 'bg-theme-card-subtle text-theme-muted'"
               >
                 {{ verdict.isSolved ? '案情全盘告破' : '推演错失真凶' }}
               </span>
@@ -102,7 +102,7 @@ const missedClues = computed(() => CLUES.filter(
             <span class="text-xs font-mono uppercase tracking-wider text-theme-accent">
               // 案件真凶
             </span>
-            <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-red-950/40 text-red-400 border border-red-500/40">
+            <span class="text-xs px-2 py-0.5 rounded-full font-bold bg-theme-accent text-white border border-theme-border shadow-xs">
               IRREFUTABLE CULPRIT
             </span>
           </div>
@@ -173,7 +173,7 @@ const missedClues = computed(() => CLUES.filter(
           <FileCheck2 class="w-4 h-4 text-theme-accent" />
           <span>现场关键证据搜集率 ({{ roomState.discoveredClueIds.length }}/8)</span>
         </h4>
-        <div v-if="missedClues.length === 0" class="p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-emerald-300 text-xs text-center">
+        <div v-if="missedClues.length === 0" class="p-4 rounded-xl border border-theme-border bg-theme-surface text-theme-ink text-xs text-center font-serif">
           全部核心关键物证均已勘验齐全！展现了极高水平的现场观察力。
         </div>
         <div v-else class="space-y-2">
@@ -182,7 +182,7 @@ const missedClues = computed(() => CLUES.filter(
             :key="clue.id"
             class="p-2.5 rounded-lg border border-theme-border bg-theme-surface flex items-start space-x-2 text-xs"
           >
-            <span class="text-amber-500 font-bold">●</span>
+            <span class="text-theme-accent font-bold">●</span>
             <div>
               <span class="font-bold text-theme-ink">{{ clue.name }} (遗漏)</span>
               <p class="text-[11px] text-theme-muted mt-0.5">{{ clue.shortDesc }}</p>

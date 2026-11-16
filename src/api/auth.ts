@@ -17,14 +17,20 @@ export interface LoginParams {
  * 登录成功脱敏用户信息 VO
  */
 export interface UserData {
-  id: number;
-  username: string;
-  password: null | string;
-  nickname: string;
-  email: string;
-  status: number;
-  createTime: string;
-  updateTime: string;
+  id?: number | string;
+  username?: string;
+  userName?: string;
+  password?: null | string;
+  nickname?: string;
+  nickName?: string;
+  name?: string;
+  email?: string;
+  status?: number;
+  token?: string;
+  accessToken?: string;
+  createTime?: string;
+  updateTime?: string;
+  [key: string]: any;
 }
 
 /**
@@ -32,8 +38,9 @@ export interface UserData {
  */
 export interface LoginResponse {
   code: number;
-  msg: string;
-  data: UserData | null;
+  msg?: string;
+  data: UserData | string | null;
+  [key: string]: any;
 }
 
 /**
@@ -58,9 +65,18 @@ export function login(params: LoginParams): Promise<LoginResponse> {
 }
 
 /**
+ * 用户注册接口
+ * POST http://localhost:8080/user/register
+ */
+export function register(params: { username: string; password: string; nickname?: string }): Promise<LoginResponse> {
+  return request.post<LoginResponse>('/user/register', params, { skipAuth: true });
+}
+
+/**
  * 兼容别名导出
  */
 export const loginApi = login;
+export const registerApi = register;
 
 /**
  * 触发 401 Unauthorized 测试接口（验证自动拦截与弹窗流程）
